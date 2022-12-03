@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 // import './styles/index.css';
-import MainPage from "./MainPage";
+import MainPage from "./client/MainPage";
 
 class Game extends React.Component {
   render() {
