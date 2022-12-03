@@ -42,14 +42,14 @@ const MyMap = ({
                 ],
                 'id': 'blank'
             },
-            center: [-87.61694, 41.86625],
-            zoom: 10,
+            center: [-72.49733, 42.36881],
+            zoom: 18,
 //            pitch: 40,
 //            bearing: 20,
             antialias: true
         });
 
-        new Marker().setLngLat([-87.61694, 41.86625]).addTo(map);
+        new Marker().setLngLat([-72.49733, 42.36881]).addTo(map);
 
         mapIsReadyCallback(map);
         }, [mapContainer.current]);
