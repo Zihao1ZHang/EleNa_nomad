@@ -24,7 +24,7 @@ class MainPage extends Component {
             this.sendRequest();
           }}
         >
-          <span className={classes.goText}>Search!</span>
+          <span>Search!</span>
         </button>
       </div>
     );
