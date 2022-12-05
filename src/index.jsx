@@ -4,7 +4,7 @@ import MyMap from './mapcomponents/map';
 import SideBar from "./mapcomponents/sidebar";
 import './style.css';
 import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
-import { Marker, LngLatBounds } from 'maplibre-gl';
+import maplibregl, { Marker, LngLatBounds } from 'maplibre-gl';
 import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 
 function addMarkertoMap(map, point){
@@ -101,6 +101,17 @@ function addSearchbar(map){
 
 class App extends Component {
     mapIsReadyCallback(map) {
+        var markerHeight = 50, markerRadius = 10, linearOffset = 25;
+        var popupOffsets = {
+            'top': [0, 0],
+            'top-left': [0,0],
+            'top-right': [0,0],
+            'bottom': [0, -markerHeight],
+            'bottom-left': [linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
+            'bottom-right': [-linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
+            'left': [markerRadius, (markerHeight - markerRadius) * -1],
+            'right': [-markerRadius, (markerHeight - markerRadius) * -1]
+        };
         map.doubleClickZoom.disable();
         map.dragRotate.disable();
         const startpoint = new Marker().setLngLat([0,0]).addTo(map);
@@ -109,13 +120,17 @@ class App extends Component {
         const destination_inputfield = document.getElementById('Destination');
         const Btn1 = document.getElementById('StartBtn');
         var points = [[-72.49733, 42.36881], [-72.49733, 42.36781]];
+        var popup1 = new maplibregl.Popup({offset: popupOffsets, closeButton: false, closeOnClick:false});
+        var popup2 = new maplibregl.Popup({offset: popupOffsets, closeButton: false, closeOnClick:false});
         map.on("click", function(e) {
+            popup1.setLngLat(e.lngLat).setText("Beginning: " + e.lngLat.toString().slice(6)).setMaxWidth("300px").addTo(map);
             removeLine(map);
             beginning_inputfield.value = e.lngLat.toString().slice(6);
             startpoint.setLngLat(e.lngLat);
             points[0] = [e.lngLat.lng, e.lngLat.lat];
         });
         map.on("contextmenu", function(e) {
+            popup2.setLngLat(e.lngLat).setText("Destination: " + e.lngLat.toString().slice(6)).setMaxWidth("300px").addTo(map);
             removeLine(map);
             destination_inputfield.value = e.lngLat.toString().slice(6);
             destination.setLngLat(e.lngLat);
