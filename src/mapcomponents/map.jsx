@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-//import './myMap.css';
+import './map.css';
 import { Map } from 'maplibre-gl';
-import { Marker, LngLatBounds } from 'maplibre-gl';
-
 
 const MyMap = ({
     mapIsReadyCallback /* To be triggered when a map object is created */,
@@ -41,7 +39,7 @@ const MyMap = ({
                 'id': 'blank'
             },
             center: [-72.49733, 42.36881],
-            zoom: 18,
+            zoom: 15,
 //            pitch: 40,
 //            bearing: 20,
             antialias: true
