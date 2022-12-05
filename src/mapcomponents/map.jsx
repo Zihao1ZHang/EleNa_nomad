@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import './myMap.css';
+//import './myMap.css';
 import { Map } from 'maplibre-gl';
-import { Marker } from 'maplibre-gl';
+import { Marker, LngLatBounds } from 'maplibre-gl';
+
 
 const MyMap = ({
     mapIsReadyCallback /* To be triggered when a map object is created */,
@@ -11,12 +12,9 @@ const MyMap = ({
     useEffect(() => {
         const map = new Map({
             container: mapContainer.current,
-//            style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
-            style: {
+            style:
+            {
                 'version': 8,
-                'name': 'Blank',
-                'center': [0, 0],
-                'zoom': 0,
                 'sources': {
                     'raster-tiles': {
                         'type': 'raster',
@@ -48,8 +46,6 @@ const MyMap = ({
 //            bearing: 20,
             antialias: true
         });
-
-        new Marker().setLngLat([-72.49733, 42.36881]).addTo(map);
 
         mapIsReadyCallback(map);
         }, [mapContainer.current]);

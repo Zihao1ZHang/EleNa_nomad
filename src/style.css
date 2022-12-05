@@ -1,10 +1,5 @@
 @import '~maplibre-gl/dist/maplibre-gl.css';
 
-h1,
-p {
-    font-family: Lato;
-}
-
 html,
 body,
 #root,
@@ -12,3 +7,4 @@ body,
     height: 100%;
     margin: 0;
 }
+/*body { margin-left: 100px; padding: 0; }*/
