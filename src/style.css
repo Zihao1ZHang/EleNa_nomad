@@ -8,6 +8,15 @@ root,
     margin:0;
 }
 
+@keyframes glow {
+    from{
+        background-position: 0;
+    }
+    to{
+        background-position: 400%;
+    }
+}
+
 .interface {
     font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
     height: 100%;
@@ -18,9 +27,27 @@ root,
     left: 0;
     overflow-x: hidden;
     padding: 10px 10px;
-    background-color: #d6f5f3;
+    color: #ffffff;
+    background-color: #264653;
+/*    background: linear-gradient(*/
+/*            90deg,*/
+/*            #f9d923,*/
+/*            #00a19d,*/
+/*            #0c87b7,*/
+/*            #cb49ff,*/
+/*            #ff6666,*/
+/*            #f9d923*/
+/*        );*/
+/*    background-size: 400%;*/
+    border: 3px solid rgba(255,255,255,.2);
+    box-shadow: 0 0 15px rgba(2,4,24,1);
+/*    animation: glow linear forwards;*/
+/*    animation-duration: 12s;*/
+/*    animation-iteration-count: infinite;*/
 }
 
 .mapboxgl-popup {
     max-width: 200px;
+/*    color: rgba(0,0,0,0.6);*/
+    background-color: rgba(200,200,200,0.8);
 }

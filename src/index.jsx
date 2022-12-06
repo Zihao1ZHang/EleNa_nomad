@@ -99,6 +99,39 @@ function addSearchbar(map){
     );
 }
 
+function sendRequest(start, end) {
+    console.log(11111111);
+    const src = start;
+    const dest = end;
+    const min_max = 1;
+    const percentage = 100;
+    fetch("http://localhost:8080/get_route", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            source: src,
+            destination: dest,
+            Min_max: min_max,
+            Percentage: percentage,
+        }),
+    })
+    .then((res) => res.json())
+    .then((json) => {
+        this.setState({
+            route: json["Route"],
+            renderRoute: true,
+            distance: json["Distance"],
+            elevation: json["Elevation Gain"],
+        });
+        console.log(json["Route"]);
+        console.log(json["Distance"]);
+        console.log(json["Elevation Gain"]);
+    });
+}
+
 class App extends Component {
     mapIsReadyCallback(map) {
         var markerHeight = 50, markerRadius = 10, linearOffset = 25;
@@ -139,6 +172,7 @@ class App extends Component {
         Btn1.addEventListener('click', function() {
             removeLine(map);
             addLinestoMap(map, points);
+            sendRequest([startpoint.getLngLat().lng, startpoint.getLngLat().lat], [destination.getLngLat().lng, destination.getLngLat().lat]);
         });
         addSearchbar(map);
 //        addLinestoMap(map, points);
