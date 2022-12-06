@@ -22,3 +22,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 src/server/__pycache__/Route_Algorithm.cpython-39.pyc
+cache/19f32f96ebf6ca0aae66fffb64d7ce87e309345a.json
+cache/68e59157d489aea967ab2e42e535fc39541e6b82.json
+.fleet/run.json
+.fleet/settings.json
+.idea/workspace.xml
+src/server/__pycache__/Route_Algorithm.cpython-311.pyc
+.idea/workspace.xml
