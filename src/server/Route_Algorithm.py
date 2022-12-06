@@ -6,7 +6,7 @@ from shapely.geometry import Point
 
 def find_route(source, dest, place):
     # place = "Piedmont, California, USA"
-    G = ox.graph_from_place(place, network_type="drive")
+    G = ox.graph_from_place(place, network_type="all")
     print(source)
     print(dest)
     orig_node = ox.nearest_nodes(G, source[0], source[1])
