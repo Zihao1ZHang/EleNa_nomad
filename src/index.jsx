@@ -100,6 +100,7 @@ function addSearchbar(map){
 }
 
 function sendRequest(start, end) {
+    var result = null;
     console.log(11111111);
     const src = start;
     const dest = end;
@@ -112,28 +113,27 @@ function sendRequest(start, end) {
             "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify({
-            source: src,
-            destination: dest,
+            Source: src,
+            Destination: dest,
             Min_max: min_max,
             Percentage: percentage,
         }),
     })
     .then((res) => res.json())
     .then((json) => {
-        this.setState({
-            route: json["Route"],
-            renderRoute: true,
-            distance: json["Distance"],
-            elevation: json["Elevation Gain"],
-        });
+        result = json["Route"];
         console.log(json["Route"]);
-        console.log(json["Distance"]);
-        console.log(json["Elevation Gain"]);
+//        console.log(json["Distance"]);
+//        console.log(json["Elevation Gain"]);
     });
+    return result;
 }
 
 class App extends Component {
     mapIsReadyCallback(map) {
+        var result = null;
+        var src = null;
+        var dest = null;
         var markerHeight = 50, markerRadius = 10, linearOffset = 25;
         var popupOffsets = {
             'top': [0, 0],
@@ -171,8 +171,27 @@ class App extends Component {
         });
         Btn1.addEventListener('click', function() {
             removeLine(map);
-            addLinestoMap(map, points);
-            sendRequest([startpoint.getLngLat().lng, startpoint.getLngLat().lat], [destination.getLngLat().lng, destination.getLngLat().lat]);
+            src = [startpoint.getLngLat().lng, startpoint.getLngLat().lat];
+            dest =  [destination.getLngLat().lng, destination.getLngLat().lat]
+            fetch("http://localhost:8080/get_route", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                },
+                body: JSON.stringify({
+                    Source: src,
+                    Destination: dest,
+                    Min_max: 1,
+                    Percentage: 1,
+                }),
+            })
+            .then((res) => res.json())
+            .then((json) => {
+                removeLine(map);
+                result = json["Route"];
+                addLinestoMap(map, result);
+             });
         });
         addSearchbar(map);
 //        addLinestoMap(map, points);

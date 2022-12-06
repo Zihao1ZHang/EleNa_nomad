@@ -8,7 +8,7 @@ CORS(app)
 @app.route('/get_route', methods=['POST'])
 def get_route():
     content = request.get_json()
-
+    print(content)
     source = content['Source']
     dest = content['Destination']
     min_max = content['Min_max']
@@ -17,8 +17,8 @@ def get_route():
     print(dest)
     print(min_max)
     print(percent)
-    route = find_route(source, dest, min_max, percent)
-
+    route = find_route(source, dest, place="Amherst, Massachusetts, USA")
+    print(route[0])
     response = jsonify({'Route': route})
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
