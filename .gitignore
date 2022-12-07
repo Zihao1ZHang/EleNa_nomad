@@ -28,4 +28,4 @@ cache/68e59157d489aea967ab2e42e535fc39541e6b82.json
 .fleet/settings.json
 .idea/workspace.xml
 src/server/__pycache__/Route_Algorithm.cpython-311.pyc
-.idea/workspace.xml
+cache

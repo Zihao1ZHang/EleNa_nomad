@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from Route_Algorithm import find_route
+import osmnx as ox
 app = Flask(__name__)
 CORS(app)
 
@@ -30,5 +31,6 @@ def hello_world():
 
 
 if __name__ == '__main__':
+    ox.config(use_cache=True, log_console=True)
     print("start server at 127.0.0.1:8080")
     app.run(host="127.0.0.1", port=8080, debug=True)
