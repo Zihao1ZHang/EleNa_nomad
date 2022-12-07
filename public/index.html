@@ -1,6 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <style>
+    .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 25px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+    .slider:hover {
+        opacity: 1;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        background: #04AA6D;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        background: #04AA6D;
+        cursor: pointer;
+    }
+    </style>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -43,6 +75,24 @@
             </fieldset>
         </section>
         <section>
+            <fieldset>
+                <legend>Please input the percentage</legend>
+                <input type="range" id="percentage" name="percentage" min="100" max="150" value="125" class="slider">
+                <p>Percentage: <input type="text" id="percentageValue" name="percentageValue" size="20" value="" required readonly></p>
+            </fieldset>
+        </section>
+        <section>
+            <fieldset>
+                <legend>Goal</legend>
+                <select id = "goal">
+                    <option>Shortest route</option>
+                    <option>Max elevation</option>
+                    <option>Min elevation</option>
+                </select>
+<!--                <input type="checkbox" id="max_checkbox" name="max_checkbox">-->
+            </fieldset>
+        </section>
+        <section>
             <div class="Btn1">
                 <input type="submit" id="StartBtn" name="Start" value="Start Calculation"></input>
             </div>
@@ -59,5 +109,13 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+  <script>
+        var slider = document.getElementById("percentage");
+        var output = document.getElementById("percentageValue");
+        output.value = slider.value;
+        slider.oninput = function() {
+        output.value = this.value;
+    }
+  </script>
   </body>
 </html>

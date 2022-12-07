@@ -101,7 +101,6 @@ function addSearchbar(map){
 
 function sendRequest(start, end) {
     var result = null;
-    console.log(11111111);
     const src = start;
     const dest = end;
     const min_max = 1;
@@ -155,6 +154,10 @@ class App extends Component {
         var points = [[-72.49733, 42.36881], [-72.49733, 42.36781]];
         var popup1 = new maplibregl.Popup({offset: popupOffsets, closeButton: false, closeOnClick:false});
         var popup2 = new maplibregl.Popup({offset: popupOffsets, closeButton: false, closeOnClick:false});
+        var percentage = document.getElementById("percentage");
+        var goal = document.getElementById("goal");
+        console.log(percentage.value);
+        console.log(goal.value);
         map.on("click", function(e) {
             popup1.setLngLat(e.lngLat).setText("Beginning: " + e.lngLat.toString().slice(6)).setMaxWidth("300px").addTo(map);
             removeLine(map);
