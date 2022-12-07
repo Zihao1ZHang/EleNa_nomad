@@ -15,7 +15,7 @@ def find_route(source, dest, place):
     print(dest_node)
 
     # dest_node = ox.nearest_nodes((dest['x'], dest['y']))
-    route = ox.shortest_path(G, orig_node, dest_node, weight="length")
+    route = ox.shortest_path(G, orig_node, dest_node, weight="length", cpus=8)
     routes = []
 
     for node in route:
@@ -31,3 +31,11 @@ def find_route(source, dest, place):
 
 #     routes = find_route(source, dest, place)
 #     print("done!")
+if __name__ == "__main__":
+    s = [-72.50111727912923, 42.37282871002975]
+    d = [-72.48302846153265, 42.3650288487147]
+    p = "Amherst, Massachusetts, USA"
+    g = ox.graph_from_place(p, network_type="all")
+    node_1 = ox.nearest_nodes(g, s[0], s[1])
+    node_2 = ox.nearest_nodes(g, d[0], d[1])
+    route = ox.shortest_path(g, node_1, node_2, weight="length", cpus=8)
