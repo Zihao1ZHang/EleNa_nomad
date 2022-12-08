@@ -8,20 +8,26 @@ CORS(app)
 @app.route('/get_route', methods=['POST'])
 def get_route():
     content = request.get_json()
-    print(content)
+    # print(content)
     source = content['Source']
     dest = content['Destination']
-    min_max = content['Min_max']
+    is_max = content['Is_max']
     percent = content['Percentage']
-    print(source)
-    print(dest)
-    print(min_max)
+    # print(source)
+    # print(dest)
+    # <option>Shortest route</option>
+    # <option>Max elevation</option>
+    #     <option>Min elevation</option>
+    method = "A"
+    if is_max == "Shortest route":
+        method = 'S'
+    elif is_max == "Max elevation":
+        is_max = True
+    else:
+        is_max = False
     print(percent)
-    route1, r1_length, elevation1 = find_route(
-        source, dest, place="Amherst, Massachusetts, USA")
-    route2, r2_length, elevation2 = Astar(
-        source, dest, 1, r1_length*1.1, place="Amherst, Massachusetts, USA")
-    response = jsonify({'Route': route2})
+    route = find_route(source, dest, method=method, percentage=float(percent)/100, is_max=is_max)
+    response = jsonify({'Route': route})
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
