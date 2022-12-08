@@ -9,6 +9,7 @@ import networkx as nx
 
 
 def find_route(source, dest, place, method='A', percentage=1, min_max=1):
+    G = ox.graph_from_bbox(north=max(source[1], dest[1])+0.01, south=min(source[1], dest[1])-0.01, east=max(source[0], dest[0])+0.01, west=min(source[0], dest[0])-0.01)
     # place = "Piedmont, California, USA"
     G = ox.graph_from_place(place, network_type="all")
     G = ox.elevation.add_node_elevations_google(
