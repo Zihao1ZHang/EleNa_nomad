@@ -43,7 +43,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.editor"
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
   <component name="RunManager">
@@ -84,7 +84,7 @@
       <option name="presentableId" value="Default" />
       <updated>1670294689552</updated>
       <workItem from="1670294691192" duration="6437000" />
-      <workItem from="1670376780822" duration="8157000" />
+      <workItem from="1670376780822" duration="8789000" />
     </task>
     <servers />
   </component>
