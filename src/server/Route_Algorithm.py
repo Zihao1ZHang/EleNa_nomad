@@ -5,7 +5,6 @@ import geopandas as gpd
 from shapely.geometry import Point
 from keys import google_elevation_api_key
 from utils import *
-from pqdict import pqdict
 import networkx as nx
 
 
@@ -110,6 +109,7 @@ def dijkstra_find_route(geodata, orig, dest):
         current_node = prev[current_node]
     return path[::-1], 0, 0
 
+
     # get_elevation_gain
     #
 def get_neighbor_idx(x,y,dims):
@@ -121,41 +121,6 @@ def get_neighbor_idx(x,y,dims):
                 res.append((x+i,y+j))
     return res
 
-def dijkstra(C,s,e):    
-    D = {}
-    P = {}
-    Q = pqdict() 
-    Q[s] = 0
-
-    while len(Q)>0:
-        (v,vv) = Q.popitem()
-        D[v] = vv
-        neighs = get_neighbor_idx(v[0],v[1],C.shape)
-        for w in neighs:
-            vwLength = D[v] + np.abs(C[v[0],v[1]] - C[w[0],w[1]])
-            if w in D:
-                if vwLength < D[v]:
-                    raise ValueError
-            elif w not in Q or vwLength < Q[w]:
-                Q[w] = vwLength
-                P[w] = v
-
-    path = []
-    while 1:
-       path.append(e)
-       if e == s: break
-       e = P[e]
-    path.reverse()
-    return path   
-
-m = np.array([[999.9, 999.9, 999.9,   0. ],
-              [999.9, 999.9, 999.9,   0. ],
-              [999.9, 999.9, 999.9,   0. ],
-              [  0.,    0.,    0.,    0. ]])
-
-res = dijkstra(m,(3,0),(0,3))
-
-print (res)
 
 # if __name__ == "__main__":
 #     place = "Amherst, Massachusetts, USA"
