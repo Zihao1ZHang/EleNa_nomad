@@ -8,7 +8,7 @@ from utils import *
 import networkx as nx
 
 
-def find_route(source, dest, method='A', percentage=1, is_max=1):
+def find_route(source, dest, method='D', percentage=1, is_max=1):
     G = ox.graph_from_bbox(north=max(source[1], dest[1])+0.01, south=min(source[1], dest[1])-0.01, east=max(source[0], dest[0])+0.01, west=min(source[0], dest[0])-0.01)
     # place = "Piedmont, California, USA"
     # G = ox.graph_from_place(place, network_type="all")
@@ -31,9 +31,11 @@ def find_route(source, dest, method='A', percentage=1, is_max=1):
     if method == "A":
         routes, _, _ = Astar(G, orig_node, dest_node, is_max, route_length * percentage)
     elif method == "D":
-        routes, _, _ = dijkstra_find_route(G, orig_node, dest_node)
+        # routes, _, _ = dijkstra_find_route(G, orig_node, dest_node)\
+        routes, _, _ = dijkstra_find_route_elevation(G, orig_node, dest_node, route_length * percentage, is_max=is_max)
     else:
         routes = shortest_routes
+    print(routes)
     return routes if routes != 0 else shortest_routes
 
 
@@ -108,6 +110,48 @@ def dijkstra_find_route(geodata, orig, dest):
         path.append(current_node)
         current_node = prev[current_node]
     return path[::-1], 0, 0
+
+
+def dijkstra_find_route_elevation(geodata, orig, dest, max_length, is_max=True, elevation_factor=10, cur_iteration=100):
+    if cur_iteration == 0:
+        return 0, 0, 0
+    unvisited_nodes = []
+    dist = {}
+    _dist = {}
+    prev = {}
+    distance_traveled = 0
+    for node in list(geodata.nodes.keys()):
+        dist[node] = float('inf')
+        _dist[node] = float('inf')
+        prev[node] = None
+        unvisited_nodes.append(node)
+    dist[orig] = 0
+    _dist[orig] = 0
+    while unvisited_nodes is not []:
+        current_node = min(dist, key=dist.get)
+        distance_traveled += dist[current_node]
+        if current_node == dest:
+            break
+        unvisited_nodes.remove(current_node)
+        for n in nx.neighbors(geodata, current_node):
+            if n in unvisited_nodes:
+                if is_max:
+                    temp = dist[current_node] + get_length(geodata, current_node, n) - elevation_factor * get_elevation_gain(G=geodata, start=orig, end=dest)
+                else:
+                    temp = dist[current_node] + get_length(geodata, current_node, n) + elevation_factor * get_elevation_gain(G=geodata, start=orig, end=dest)
+                if temp < dist[n]:
+                    dist[n] = temp
+                    _dist[n] = temp
+                    prev[n] = current_node
+        dist.pop(current_node)
+    path = []
+    current_node = dest
+    while current_node:
+        path.append(current_node)
+        current_node = prev[current_node]
+    if get_path_length(geodata, path[::-1]) > max_length:
+        return dijkstra_find_route_elevation(geodata, orig, dest, max_length, is_max, elevation_factor/1.5, cur_iteration - 1)
+    return get_route_coord(geodata, path[::-1]), 0, 0
 
 
     # get_elevation_gain

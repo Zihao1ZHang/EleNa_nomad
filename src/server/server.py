@@ -18,14 +18,13 @@ def get_route():
     # <option>Shortest route</option>
     # <option>Max elevation</option>
     #     <option>Min elevation</option>
-    method = "A"
+    method = "D"
     if is_max == "Shortest route":
         method = 'S'
     elif is_max == "Max elevation":
         is_max = True
     else:
         is_max = False
-    print(percent)
     route = find_route(source, dest, method=method, percentage=float(percent)/100, is_max=is_max)
     response = jsonify({'Route': route})
     response.headers.add('Access-Control-Allow-Origin', '*')
