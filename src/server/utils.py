@@ -1,7 +1,5 @@
 from math import *
 import osmnx as ox
-import sys
-from model.Route import Route
 
 
 def get_length(G, start, end):
@@ -44,10 +42,7 @@ def get_heuristic_distance(G, node1, node2):
 
     circle_dist = ox.distance.great_circle_vec(
         n1['y'], n1['x'], n2['y'], n2['x'])
-    # route = ox.shortest_path(G, node1, node2, weight="length")
-    # shortest_routes = get_path_length(G, route)
     return circle_dist
-    # return sqrt((n1['x'] - n2['x']) ** 2 + (n1['y'] - n2['y']) ** 2)
 
 
 def get_result(is_max, routes):
@@ -57,15 +52,16 @@ def get_result(is_max, routes):
     else:
         target_elevation = float('inf')
     for route in routes:
-        print(route)
-        if is_max:
-            target_elevation = max(target_elevation, route.elevation)
-        else:
-            target_elevation = min(target_elevation, route.elevation)
+        if route:
+            if is_max:
+                target_elevation = max(target_elevation, route.elevation)
+            else:
+                target_elevation = min(target_elevation, route.elevation)
 
     for route in routes:
-        if target_elevation == route.elevation:
-            return route
+        if route:
+            if target_elevation == route.elevation:
+                return route
 
 
 class NodeWrapper(object):
