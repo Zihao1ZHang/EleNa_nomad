@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from Route_Algorithm import *
+from model.Route import Route
 app = Flask(__name__)
 CORS(app)
 
@@ -27,7 +28,7 @@ def get_route():
         is_max = False
     route = find_route(source, dest, method=method,
                        percentage=float(percent)/100, is_max=is_max)
-    response = jsonify({'Route': route})
+    response = jsonify({'Route': route.path})
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 

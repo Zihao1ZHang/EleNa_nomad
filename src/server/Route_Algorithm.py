@@ -6,6 +6,7 @@ from shapely.geometry import Point
 from keys import google_elevation_api_key
 from utils import *
 import networkx as nx
+from model.Route import Route
 
 
 def find_route(source, dest, method='D', percentage=1, is_max=1):
@@ -23,22 +24,27 @@ def find_route(source, dest, method='D', percentage=1, is_max=1):
 
     # dest_node = ox.nearest_nodes((dest['x'], dest['y']))
     route = ox.shortest_path(G, orig_node, dest_node, weight="length")
-    shortest_routes = get_route_coord(G, route)
-    route_length = get_path_length(G, route)
-    elevation_g = get_path_elevation(G, route)
+    shortest_route = Route(get_route_coord(G, route), get_path_length(
+        G, route), get_path_elevation(G, route))
+    route_astar = Astar(G, orig_node, dest_node,
+                        is_max, shortest_route.length * percentage)
+    route_dijkstra = dijkstra_find_route_elevation(
+        G, orig_node, dest_node, shortest_route.length * percentage, is_max=is_max)
 
-    if method == "A":
-        routes, _, elevation_g_astar = Astar(G, orig_node, dest_node,
-                                             is_max, route_length * percentage)
-    elif method == "D":
-        # routes, _, _ = dijkstra_find_route(G, orig_node, dest_node)\
-        routes, _, _ = dijkstra_find_route_elevation(
-            G, orig_node, dest_node, route_length * percentage, is_max=is_max)
-    else:
-        routes = shortest_routes
-    print("Elevation gain of Shortest Route: " + str(elevation_g))
-    print("Elevation gain of Astar Algortihm: " + str(elevation_g_astar))
-    return routes if routes != 0 else shortest_routes
+    print("*************************")
+    print(shortest_route.elevation)
+    print(route_dijkstra.elevation)
+    print("*************************")
+
+    routes = [shortest_route]
+    if (route_astar):
+        routes.append(route_astar)
+    if (route_dijkstra):
+        routes.append(route_dijkstra)
+
+    routes = get_result(is_max, routes)
+
+    return routes
 
 
 def Astar(G, start, end, is_max, max_length):
@@ -61,7 +67,8 @@ def Astar(G, start, end, is_max, max_length):
             routes = get_route_coord(G, path)
             route_length = get_path_length(G, path)
             elevation_g = get_path_elevation(G, path)
-            return routes, route_length, elevation_g
+            astar_route = Route(routes, route_length, elevation_g)
+            return astar_route
 
         successors = filter(lambda n: n not in close_list,
                             nx.neighbors(G, curr_node.id))
@@ -83,7 +90,7 @@ def Astar(G, start, end, is_max, max_length):
                 else:
                     heapq.heappush(open_list, successor_node)
     print("Did not find the route")
-    return 0, 0, 0
+    return None
 
 
 def dijkstra_find_route(geodata, orig, dest):
@@ -113,12 +120,15 @@ def dijkstra_find_route(geodata, orig, dest):
     while current_node:
         path.append(current_node)
         current_node = prev[current_node]
-    return path[::-1], 0, 0
+    path = path[::-1]
+    shortest_route = Route(get_route_coord(geodata, path), get_path_length(
+        geodata, path), get_path_elevation(geodata, path))
+    return shortest_route
 
 
 def dijkstra_find_route_elevation(geodata, orig, dest, max_length, is_max=True, elevation_factor=10, cur_iteration=100):
     if cur_iteration == 0:
-        return 0, 0, 0
+        return None
     unvisited_nodes = []
     dist = {}
     _dist = {}
@@ -157,12 +167,23 @@ def dijkstra_find_route_elevation(geodata, orig, dest, max_length, is_max=True, 
         current_node = prev[current_node]
     if get_path_length(geodata, path[::-1]) > max_length:
         return dijkstra_find_route_elevation(geodata, orig, dest, max_length, is_max, elevation_factor/1.5, cur_iteration - 1)
-    return get_route_coord(geodata, path[::-1]), 0, 0
+    path = path[::-1]
+    routes = get_route_coord(geodata, path)
+    route_length = get_path_length(geodata, path)
+    elevation_g = get_path_elevation(geodata, path)
+    print("Dijkstra")
+    print(route_length)
+    print(elevation_g)
+    # print(path)
+    dijkstra_route = Route(routes, route_length, elevation_g)
+    return dijkstra_route
 
 
-# if __name__ == "__main__":
-#     place = "Amherst, Massachusetts, USA"
-#     source = [-72.5198118276834, 42.373051188825855]
-#     dest = [-72.4992091462399, 42.36979729154845]
+if __name__ == "__main__":
+    place = "Amherst, Massachusetts, USA"
+    # source = [-72.5198118276834, 42.373051188825855]
+    # dest = [-72.4992091462399, 42.36979729154845]
+    source = [-72.50962524612441, 42.375880221431004]
+    dest = [-72.49934702117964, 42.370442879663926]
 
-#     route1 = find_route(source, dest, 'A')
+    route1 = find_route(source, dest, 'A')
