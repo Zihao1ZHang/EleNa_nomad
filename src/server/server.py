@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from Route_Algorithm import *
-from model.Route import Route
+from model.RouteModel import Route
 app = Flask(__name__)
 CORS(app)
 
