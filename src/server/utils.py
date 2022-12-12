@@ -1,4 +1,5 @@
 from math import *
+import osmnx as ox
 
 
 def get_length(G, start, end):
@@ -38,23 +39,24 @@ def get_elevation_gain(G, start, end):
 def get_heuristic_distance(G, node1, node2):
     n1 = G.nodes()[node1]
     n2 = G.nodes()[node2]
-    R = 6737000
-    dlon = n1['y'] - n2['y']
-    dlat = n1['x'] - n2['x']
-    a = (sin(dlat/2))**2 + cos(n1['x']) * cos(n2['x']) * (sin(dlon/2))**2
-    c = 2 * atan2(sqrt(a), sqrt(1-a))
-    return R * c
+
+    circle_dist = ox.distance.great_circle_vec(
+        n1['y'], n1['x'], n2['y'], n2['x'])
+    # route = ox.shortest_path(G, node1, node2, weight="length")
+    # shortest_routes = get_path_length(G, route)
+    return circle_dist
     # return sqrt((n1['x'] - n2['x']) ** 2 + (n1['y'] - n2['y']) ** 2)
 
 
 class NodeWrapper(object):
-    def __init__(self, node, parent=None, curr_dist=0, pred_distance=0, elevation=0, route_path=None):
+    def __init__(self, node, is_max, parent=None, curr_dist=0, pred_distance=0, elevation=0, route_path=None):
         self.id = node
         self.parent = parent
         self.curr_dist = curr_dist
         self.elevation = elevation
         self.route_path = route_path
         self.pred_dist = pred_distance
+        self.is_max = is_max
 
     def __lt__(self, other):
         """Operation override for the less than operation to compare two objects of the same type.
@@ -65,6 +67,13 @@ class NodeWrapper(object):
         Returns:
             A boolean representing if the current node is less than the other node
         """
-        self_heuristic_dist = self.elevation
-        other_heuristic_dist = other.elevation
-        return self_heuristic_dist > other_heuristic_dist
+
+        if self.is_max:
+            # print("find max elevation")
+            self_heuristic_dist = self.pred_dist + self.elevation * 10
+            other_heuristic_dist = other.pred_dist + other.elevation * 10
+            return self_heuristic_dist > other_heuristic_dist
+        else:
+            self_heuristic_dist = self.elevation + self.pred_dist
+            other_heuristic_dist = other.elevation + other.pred_dist
+            return self_heuristic_dist < other_heuristic_dist
