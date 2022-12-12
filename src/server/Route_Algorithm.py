@@ -159,20 +159,6 @@ def dijkstra_find_route_elevation(geodata, orig, dest, max_length, is_max=True, 
         return dijkstra_find_route_elevation(geodata, orig, dest, max_length, is_max, elevation_factor/1.5, cur_iteration - 1)
     return get_route_coord(geodata, path[::-1]), 0, 0
 
-    # get_elevation_gain
-    #
-
-
-def get_neighbor_idx(x, y, dims):
-    res = []
-    for i in ([0, -1, 1]):
-        for j in ([0, -1, 1]):
-            if i == 0 and j == 0:
-                continue
-            if x+i < (dims[0]) and x+i > -1 and y+j < (dims[1]) and y+j > -1:
-                res.append((x+i, y+j))
-    return res
-
 
 # if __name__ == "__main__":
 #     place = "Amherst, Massachusetts, USA"
