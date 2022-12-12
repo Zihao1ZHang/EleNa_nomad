@@ -8,12 +8,15 @@ import osmnx as ox
 import networkx as nx
 
 
-def find_route(source, dest, percentage=1, is_max=1):
+def find_route(source, dest, method, percentage=1, is_max=1):
     # Initialize Geo map 
     G = GeoData(source, dest, google_elevation_api_key)
 
     # run routing algorithm
     shortest_route = find_shortest_route(G)
+    if method == 'S':
+        return shortest_route.path
+    
     astar_route = Astar(G, shortest_route.length * percentage, is_max)
     dijkstra_route = dijkstra_find_route_elevation(
         G, shortest_route.length * percentage, is_max)
