@@ -1,5 +1,6 @@
 import osmnx as ox
 
+
 class GeoData(object):
     def __init__(self, source, dest, key, G=None):
         G = ox.graph_from_bbox(north=max(source[1], dest[1])+0.01, south=min(
