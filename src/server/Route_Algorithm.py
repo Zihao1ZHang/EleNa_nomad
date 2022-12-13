@@ -2,6 +2,7 @@ from keys import google_elevation_api_key
 from utils import *
 from model.RouteModel import Route
 from model.GeoDataModel import GeoData
+from model.NodeWrapperModel import NodeWrapper
 
 import heapq
 import osmnx as ox
@@ -20,6 +21,14 @@ def find_route(source, dest, method, percentage=1, is_max=1):
     astar_route = Astar(G, shortest_route.length * percentage, is_max)
     dijkstra_route = dijkstra_find_route_elevation(
         G, shortest_route.length * percentage, is_max)
+    
+    print("Shortest Route elevatio gain: " + str(shortest_route.elevation))
+    if astar_route:
+        print("Astar Route elevatio gain: " + str(astar_route.elevation))
+    else:
+        print("Fail to find route using astar")
+
+    print("Dijkstra Route elevatio gain: " + str(dijkstra_route.elevation))
 
     # find the route satisified the requirement
     routes = [shortest_route, astar_route, dijkstra_route]
@@ -68,6 +77,8 @@ def Astar(Geo, max_length, is_max=1):
                 flag = successor in visited_node
                 pred_distance = distance + \
                     get_heuristic_distance(Geo.geodata, successor, Geo.dest)
+                # elevation_gain = curr_node.elevation + \
+                #     get_elevation_gain(Geo.geodata, curr_node.id, successor)
                 elevation_gain = curr_node.elevation + \
                     get_elevation_gain(Geo.geodata, curr_node.id, successor)
                 successor_node = NodeWrapper(
@@ -171,4 +182,4 @@ if __name__ == "__main__":
     source = [-72.50962524612441, 42.375880221431004]
     dest = [-72.49934702117964, 42.370442879663926]
 
-    route1 = find_route(source, dest)
+    route1 = find_route(source, dest, method='A', percentage=1.5, is_max=0)
