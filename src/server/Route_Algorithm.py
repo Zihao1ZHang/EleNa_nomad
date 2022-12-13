@@ -6,6 +6,8 @@ from shapely.geometry import Point
 from keys import google_elevation_api_key
 from utils import *
 import networkx as nx
+import random
+from tqdm import tqdm
 
 
 def find_route(source, dest, method='D', percentage=1, is_max=1):
@@ -27,17 +29,24 @@ def find_route(source, dest, method='D', percentage=1, is_max=1):
     route_length = get_path_length(G, route)
     elevation_g = get_path_elevation(G, route)
 
-    if method == "A":
-        routes, _, elevation_g_astar = Astar(G, orig_node, dest_node,
-                                             is_max, route_length * percentage)
-    elif method == "D":
-        # routes, _, _ = dijkstra_find_route(G, orig_node, dest_node)\
-        routes, _, _ = dijkstra_find_route_elevation(
-            G, orig_node, dest_node, route_length * percentage, is_max=is_max)
-    else:
-        routes = shortest_routes
+    # if method == "A":
+    #     routes, _, elevation_g_astar = Astar(G, orig_node, dest_node,
+    #                                          is_max, route_length * percentage)
+    # elif method == "D":
+    #     # routes, _, _ = dijkstra_find_route(G, orig_node, dest_node)\
+    #     routes, _, _ = dijkstra_find_route_elevation(
+    #         G, orig_node, dest_node, route_length * percentage, is_max=is_max)
+    # else:
+    #     routes = shortest_routes
+    routes_astar, _, elevation_g_astar = Astar(G, orig_node, dest_node, is_max, route_length * percentage)
+    routes_dijkstra, elevation_dijkstra, _ = dijkstra_find_route_elevation(
+                 G, orig_node, dest_node, route_length * percentage, is_max=is_max)
+    routes, elevation_genetic = genetic_algorithm(orig_node, dest_node, G, percentage * route_length)
+
     print("Elevation gain of Shortest Route: " + str(elevation_g))
     print("Elevation gain of Astar Algortihm: " + str(elevation_g_astar))
+    print("Elevation gain of Dijkstra: " + str(elevation_dijkstra))
+    print("Elevation gain of Genetic: " + str(elevation_genetic))
     return routes if routes != 0 else shortest_routes
 
 
@@ -157,12 +166,140 @@ def dijkstra_find_route_elevation(geodata, orig, dest, max_length, is_max=True, 
         current_node = prev[current_node]
     if get_path_length(geodata, path[::-1]) > max_length:
         return dijkstra_find_route_elevation(geodata, orig, dest, max_length, is_max, elevation_factor/1.5, cur_iteration - 1)
-    return get_route_coord(geodata, path[::-1]), 0, 0
+    return get_route_coord(geodata, path[::-1]), get_path_elevation(geodata, path[::-1]), 0
+
+
+# ********************************************************************* #
+# genetic algorithm #
+# ********************************************************************* #
+# Fitness function that calculates the elevation gain of a route
+def calculate_fitness(route, geodata, distance_limit):
+    elevation_gain = get_path_elevation(geodata, route)
+    distance = get_path_length(geodata, route)
+    if distance > distance_limit:
+        return elevation_gain / distance
+    else:
+        return elevation_gain
+
+
+# Select a route from the population using roulette wheel selection
+def select_route(population, geodata, distance_limit):
+    # Calculate the total fitness of the population
+    total_fitness = sum(calculate_fitness(route, geodata, distance_limit) for route in population)
+    # Generate a random number between 0 and the total fitness
+    random_num = random.uniform(0, total_fitness)
+    # Loop through the population and subtract each route's fitness from the random number
+    # until the random number is less than or equal to zero
+    for route in population:
+        random_num -= calculate_fitness(route, geodata, distance_limit)
+        if random_num <= 0:
+            return route
+
+
+def intersection(lst1, lst2):
+    lst3 = [value for value in lst1 if value in lst2]
+    return lst3
+
+
+# Combine two routes using crossover
+def crossover(route1, route2, geodata):
+    same_elements = intersection(route1, route2)
+    if len(same_elements) <= 1:
+        node1 = random.randint(1, len(route1)-1)
+        node2 = random.randint(1, len(route2)-1)
+        route_between_nodes = dijkstra_find_route(geodata, route1[node1], route2[node2])
+        new_route = route1[:node1 - 1] + route_between_nodes + route2[node2 + 1:]
+        return new_route
+    rand1, rand2 = random.sample(same_elements, 2)
+    left_index1 = route1.index(rand1)
+    right_index1 = route1.index(rand2)
+    left_index2 = route2.index(rand1)
+    right_index2 = route2.index(rand2)
+    if left_index1 > right_index1:
+        left_index1, right_index1 = right_index1, left_index1
+    if left_index2 > right_index2:
+        left_index2, right_index2 = right_index2, left_index2
+    new_route = route1[:left_index1] + route2[left_index2:right_index2] + route1[right_index1:]
+    return new_route
+
+
+# Mutate a route by randomly changing some of its values
+def mutate(route, mutation_probability, geodata):
+    # Loop through the route and randomly change the value of each location with a certain probability
+    res = []
+    for i in range(len(route)):
+        if i == 0 or i >= len(route) - 5:
+            res.append(route[i])
+        elif random.random() < mutation_probability:
+            for node in dijkstra_find_route(geodata, route[i-1], route[i+3])[0]:
+                if node != route[i-1] and node != route[i+3]:
+                    res.append(node)
+            i += 3
+        else:
+            res.append(route[i])
+    return res if res != [] else route
+
+
+# Generate a new population of routes using crossover and mutation
+def generate_new_population(old_population, geodata, distance_limit, mutation_probability=0.1):
+    new_population = []
+    for i in range(len(old_population)):
+        # Select two routes to combine using crossover
+        route1 = select_route(old_population, geodata, distance_limit)
+        route2 = select_route(old_population, geodata, distance_limit)
+        new_route = crossover(route1, route2, geodata)
+        # Mutate the new route with a small probability
+        if random.random() < mutation_probability:
+            new_route = mutate(new_route, mutation_probability, geodata)
+        if nx.is_path(geodata, new_route):
+            new_population.append(new_route)
+    return new_population
+
+
+def generate_population(orig_node, dest_node, geodata, num=100):
+    population = []
+    rand_node_list = random.sample(list(geodata.nodes.keys()), num)
+    for node in rand_node_list:
+        route1, _, _ = dijkstra_find_route(geodata, orig_node, node)
+        route2, _, _ = dijkstra_find_route(geodata, node, dest_node)
+        population.append(route1 + route2[1:])
+    return population
+
+
+# Main loop of the genetic algorithm
+def genetic_algorithm(orig_node, dest_node, geodata, distance_limit, max_iteration=10):
+    result = []
+    res = 0
+    population = generate_population(orig_node, dest_node, geodata)
+    for i in tqdm(range(max_iteration)):
+        population = generate_new_population(population, geodata, distance_limit)
+    # Return the route with the highest elevation gain
+    for path in population:
+        tmp = calculate_fitness(path, geodata, distance_limit)
+        if res < tmp:
+            res = tmp
+            result = path
+    return get_route_coord(geodata, result), get_path_elevation(geodata, result)
 
 
 # if __name__ == "__main__":
-#     place = "Amherst, Massachusetts, USA"
-#     source = [-72.5198118276834, 42.373051188825855]
-#     dest = [-72.4992091462399, 42.36979729154845]
-
-#     route1 = find_route(source, dest, 'A')
+    # source = [-72.5198118276834, 42.373051188825855]
+    # dest = [-72.4992091462399, 42.36979729154845]
+    # G = ox.graph_from_bbox(north=max(source[1], dest[1])+0.01, south=min(
+    #     source[1], dest[1])-0.01, east=max(source[0], dest[0])+0.01, west=min(source[0], dest[0])-0.01)
+    # G = ox.elevation.add_node_elevations_google(
+    #     G, api_key=google_elevation_api_key)
+    # G = ox.elevation.add_edge_grades(G)
+    #
+    # orig_node = ox.nearest_nodes(G, source[0], source[1])
+    # dest_node = ox.nearest_nodes(G, dest[0], dest[1])
+    #
+    # # dest_node = ox.nearest_nodes((dest['x'], dest['y']))
+    # route = ox.shortest_path(G, orig_node, dest_node, weight="length")
+    # shortest_routes = get_route_coord(G, route)
+    # route_length = get_path_length(G, route)
+    # elevation_g = get_path_elevation(G, route)
+    #
+    # res = genetic_algorithm(orig_node, dest_node, G, 1.5*route_length)
+    # print(res)
+    # route1 = find_route(source, dest, 'A')
