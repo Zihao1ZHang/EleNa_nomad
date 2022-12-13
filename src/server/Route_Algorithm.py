@@ -1,33 +1,24 @@
-import numpy as np
-import heapq
-import osmnx as ox
-import geopandas as gpd
-from shapely.geometry import Point
 from keys import google_elevation_api_key
 from utils import *
+from model.RouteModel import Route
+from model.GeoDataModel import GeoData
+from model.NodeWrapperModel import NodeWrapper
+
+import heapq
+import osmnx as ox
 import networkx as nx
 import random
 from tqdm import tqdm
 
 
-def find_route(source, dest, method='D', percentage=1, is_max=1):
-    G = ox.graph_from_bbox(north=max(source[1], dest[1])+0.01, south=min(
-        source[1], dest[1])-0.01, east=max(source[0], dest[0])+0.01, west=min(source[0], dest[0])-0.01)
-    G = ox.elevation.add_node_elevations_google(
-        G, api_key=google_elevation_api_key)
-    G = ox.elevation.add_edge_grades(G)
-    print(source)
-    print(dest)
-    orig_node = ox.nearest_nodes(G, source[0], source[1])
-    dest_node = ox.nearest_nodes(G, dest[0], dest[1])
-    print(orig_node)
-    print(dest_node)
+def find_route(source, dest, method, percentage=1, is_max=1):
+    # Initialize Geo map
+    G = GeoData(source, dest, google_elevation_api_key)
 
-    # dest_node = ox.nearest_nodes((dest['x'], dest['y']))
-    route = ox.shortest_path(G, orig_node, dest_node, weight="length")
-    shortest_routes = get_route_coord(G, route)
-    route_length = get_path_length(G, route)
-    elevation_g = get_path_elevation(G, route)
+    # run routing algorithm
+    shortest_route = find_shortest_route(G)
+    if method == 'S':
+        return shortest_route
 
     # if method == "A":
     #     routes, _, elevation_g_astar = Astar(G, orig_node, dest_node,
@@ -50,39 +41,69 @@ def find_route(source, dest, method='D', percentage=1, is_max=1):
     return routes if routes != 0 else shortest_routes
 
 
-def Astar(G, start, end, is_max, max_length):
+    astar_route = Astar(G, shortest_route.length * percentage, is_max)
+    dijkstra_route = dijkstra_find_route_elevation(
+        G, shortest_route.length * percentage, is_max)
+    
+    print("Shortest Route elevatio gain: " + str(shortest_route.elevation))
+    if astar_route:
+        print("Astar Route elevatio gain: " + str(astar_route.elevation))
+    else:
+        print("Fail to find route using astar")
+
+    print("Dijkstra Route elevatio gain: " + str(dijkstra_route.elevation))
+
+    # find the route satisified the requirement
+    routes = [shortest_route, astar_route, dijkstra_route]
+    final_route = get_result(is_max, routes)
+
+    return final_route
+
+
+def find_shortest_route(Geo):
+    route = ox.shortest_path(Geo.geodata, Geo.source,
+                             Geo.dest, weight="length")
+    shortest_route = Route(get_route_coord(Geo.geodata, route), get_path_length(
+        Geo.geodata, route), get_path_elevation(Geo.geodata, route))
+    return shortest_route
+
+
+def Astar(Geo, max_length, is_max=1):
     # create source and destination node
     print("Using Astar Algorithm")
-    open_list = [NodeWrapper(start, is_max)]
+    open_list = [NodeWrapper(Geo.source, is_max)]
     close_list = set()
-    visited_node = {start: NodeWrapper(start, is_max)}
+    visited_node = {Geo.source: NodeWrapper(Geo.source, is_max)}
     while (len(open_list) > 0):
         curr_node = heapq.heappop(open_list)
         close_list.add(curr_node.id)
 
-        if (curr_node.id == end):
+        if (curr_node.id == Geo.dest):
             path = []
             curr = curr_node
             while curr.parent is not None:
                 path.insert(0, curr.id)
                 curr = visited_node[curr.parent]
             path.insert(0, curr.id)
-            routes = get_route_coord(G, path)
-            route_length = get_path_length(G, path)
-            elevation_g = get_path_elevation(G, path)
-            return routes, route_length, elevation_g
+            routes = get_route_coord(Geo.geodata, path)
+            route_length = get_path_length(Geo.geodata, path)
+            elevation_g = get_path_elevation(Geo.geodata, path)
+            astar_route = Route(routes, route_length, elevation_g)
+            return astar_route
 
         successors = filter(lambda n: n not in close_list,
-                            nx.neighbors(G, curr_node.id))
+                            nx.neighbors(Geo.geodata, curr_node.id))
         for successor in successors:
             distance = curr_node.curr_dist + \
-                get_length(G, curr_node.id, successor)
+                get_length(Geo.geodata, curr_node.id, successor)
             if distance <= max_length:
                 flag = successor in visited_node
                 pred_distance = distance + \
-                    get_heuristic_distance(G, successor, end)
+                    get_heuristic_distance(Geo.geodata, successor, Geo.dest)
+                # elevation_gain = curr_node.elevation + \
+                #     get_elevation_gain(Geo.geodata, curr_node.id, successor)
                 elevation_gain = curr_node.elevation + \
-                    get_elevation_gain(G, curr_node.id, successor)
+                    get_elevation_gain(Geo.geodata, curr_node.id, successor)
                 successor_node = NodeWrapper(
                     successor, is_max, curr_node.id, distance, pred_distance, elevation_gain, open_list)
                 visited_node[successor] = successor_node
@@ -92,7 +113,7 @@ def Astar(G, start, end, is_max, max_length):
                 else:
                     heapq.heappush(open_list, successor_node)
     print("Did not find the route")
-    return 0, 0, 0
+    return None
 
 
 def dijkstra_find_route(geodata, orig, dest):
@@ -122,45 +143,48 @@ def dijkstra_find_route(geodata, orig, dest):
     while current_node:
         path.append(current_node)
         current_node = prev[current_node]
-    return path[::-1], 0, 0
+    path = path[::-1]
+    shortest_route = Route(get_route_coord(geodata, path), get_path_length(
+        geodata, path), get_path_elevation(geodata, path))
+    return shortest_route
 
 
-def dijkstra_find_route_elevation(geodata, orig, dest, max_length, is_max=True, elevation_factor=10, cur_iteration=100):
+def dijkstra_find_route_elevation(Geo, max_length, is_max=True, elevation_factor=10, cur_iteration=100):
     if cur_iteration == 0:
-        return 0, 0, 0
+        return None
     unvisited_nodes = []
     dist = {}
     _dist = {}
     prev = {}
     distance_traveled = 0
-    for node in list(geodata.nodes.keys()):
+    for node in list(Geo.geodata.nodes.keys()):
         dist[node] = float('inf')
         _dist[node] = float('inf')
         prev[node] = None
         unvisited_nodes.append(node)
-    dist[orig] = 0
-    _dist[orig] = 0
+    dist[Geo.source] = 0
+    _dist[Geo.source] = 0
     while unvisited_nodes is not []:
         current_node = min(dist, key=dist.get)
         distance_traveled += dist[current_node]
-        if current_node == dest:
+        if current_node == Geo.dest:
             break
         unvisited_nodes.remove(current_node)
-        for n in nx.neighbors(geodata, current_node):
+        for n in nx.neighbors(Geo.geodata, current_node):
             if n in unvisited_nodes:
                 if is_max:
                     temp = dist[current_node] + get_length(
-                        geodata, current_node, n) - elevation_factor * get_elevation_gain(G=geodata, start=orig, end=dest)
+                        Geo.geodata, current_node, n) - elevation_factor * get_elevation_gain(G=Geo.geodata, start=Geo.source, end=Geo.dest)
                 else:
                     temp = dist[current_node] + get_length(
-                        geodata, current_node, n) + elevation_factor * get_elevation_gain(G=geodata, start=orig, end=dest)
+                        Geo.geodata, current_node, n) + elevation_factor * get_elevation_gain(G=Geo.geodata, start=Geo.source, end=Geo.dest)
                 if temp < dist[n]:
                     dist[n] = temp
                     _dist[n] = temp
                     prev[n] = current_node
         dist.pop(current_node)
     path = []
-    current_node = dest
+    current_node = Geo.dest
     while current_node:
         path.append(current_node)
         current_node = prev[current_node]
@@ -303,3 +327,24 @@ def genetic_algorithm(orig_node, dest_node, geodata, distance_limit, max_iterati
     # res = genetic_algorithm(orig_node, dest_node, G, 1.5*route_length)
     # print(res)
     # route1 = find_route(source, dest, 'A')
+
+
+
+    if get_path_length(Geo.geodata, path[::-1]) > max_length:
+        return dijkstra_find_route_elevation(Geo, max_length, is_max, elevation_factor/1.5, cur_iteration - 1)
+    path = path[::-1]
+    routes = get_route_coord(Geo.geodata, path)
+    route_length = get_path_length(Geo.geodata, path)
+    elevation_g = get_path_elevation(Geo.geodata, path)
+    dijkstra_route = Route(routes, route_length, elevation_g)
+    return dijkstra_route
+
+
+if __name__ == "__main__":
+    place = "Amherst, Massachusetts, USA"
+    # source = [-72.5198118276834, 42.373051188825855]
+    # dest = [-72.4992091462399, 42.36979729154845]
+    source = [-72.50962524612441, 42.375880221431004]
+    dest = [-72.49934702117964, 42.370442879663926]
+
+    route1 = find_route(source, dest, method='A', percentage=1.5, is_max=0)
