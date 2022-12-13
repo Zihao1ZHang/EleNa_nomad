@@ -1,5 +1,7 @@
-from src.server.utils import *
-from src.server.model.RouteModel import Route
+import sys
+sys.path.insert(0, '../../server')
+from utils import *
+from model.RouteModel import Route
 import networkx as nx
 import random
 from tqdm import tqdm
@@ -33,7 +35,7 @@ class GeneticAlgorithm(object):
         if self.is_max is True:
             elevation_gain = get_path_elevation(self.geodata, route)
         else:
-            elevation_gain = 10 * exp(-get_path_elevation(self.geodata, route))
+            elevation_gain = 10000/get_path_elevation(self.geodata, route)
         distance = get_path_length(self.geodata, route)
         if distance > self.distance_limit:
             return elevation_gain / distance
@@ -167,6 +169,7 @@ class GeneticAlgorithm(object):
             path.append(current_node)
             current_node = prev[current_node]
         path = path[::-1]
-        shortest_route = Route(get_route_coord(geodata, path), get_path_length(
-            geodata, path), get_path_elevation(geodata, path))
-        return shortest_route
+        return path, 0, 0
+        # shortest_route = Route(get_route_coord(geodata, path), get_path_length(
+        #     geodata, path), get_path_elevation(geodata, path))
+        # return shortest_route
