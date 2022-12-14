@@ -82,32 +82,12 @@
             </fieldset>
         </section>
         <section>
-            <!-- <fieldset> 
-                <legend>Goal - Please click your goal below</legend> -->
-                <!-- <select id = "goal"> 
+            <fieldset>
+                <legend>Goal</legend>
+                <select id = "goal">
                     <option>Shortest route</option>
                     <option>Max elevation</option>
-                    <option>Min elevation</option> 
-                </select>  -->
-                
-                <fieldset>
-                    <legend>Goal - Please click your goal below</legend>
-                    <ul>
-                      <li>Shortest Route</li>
-                      <li>Max Elevation</li>
-                      <li>Min Elevation</li>
-                    </ul>
-                  </fieldset>
-                  <script>
-                    const listItems = document.querySelectorAll('.interface ul li');
-
-                    listItems.forEach(item => {
-                        item.addEventListener('click', () => {
-                            // Do something when the list item is clicked, such as change the background color.
-                            item.style.backgroundColor = '#ccc';
-                        });
-                    });
-                  </script>
+                    <option>Min elevation</option>
                 </select>
 <!--                <input type="checkbox" id="max_checkbox" name="max_checkbox">-->
             </fieldset>
