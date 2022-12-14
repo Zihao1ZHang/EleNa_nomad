@@ -89,15 +89,30 @@
                     <option>Max elevation</option>
                     <option>Min elevation</option> 
                 </select>  -->
+
+                <script>
+                const goals = document.querySelector('#goals');
+
+                goals.addEventListener('change', (event) => {
+                const selectedGoal = event.target.value;
+
+                // Update your code to use the selected goal value
+                });
+                </script>
                 
                 <fieldset>
                     <legend>Goal - Please click your goal below</legend>
-                    <ul>
-                      <li>Shortest Route</li>
-                      <li>Max Elevation</li>
-                      <li>Min Elevation</li>
-                    </ul>
+                    <ul id="goals">
+                        <li><input type="radio" name="goal" value="Shortest Route" />Shortest Route</li>
+                        <li><input type="radio" name="goal" value="Max Elevation" />Max Elevation</li>
+                        <li><input type="radio" name="goal" value="Min Elevation" />Min Elevation</li>
+                      </ul>
                   </fieldset>
+
+                  <script>
+                    const selectedGoal = document.querySelector('#goals input:checked').value;
+                  </script>
+
                   <script>
                     const listItems = document.querySelectorAll('.interface ul li');
 
@@ -114,12 +129,14 @@
                     });
 
                   </script>
+                  
                 </select>
 <!--                <input type="checkbox" id="max_checkbox" name="max_checkbox">-->
             </fieldset>
         </section>
         <section>
             <div class="Btn1">
+
                 <input type="submit" id="StartBtn" name="Start" value="Start Calculation"></input>
             </div>
         </section>
