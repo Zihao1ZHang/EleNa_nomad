@@ -7,11 +7,8 @@ import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 import maplibregl, { Marker, LngLatBounds } from 'maplibre-gl';
 import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 
-function addMarkertoMap(map, point){
-    const mk = new Marker().setLngLat(point).addTo(map);
-    return mk;
-}
 
+// Render a line on the map, used to display the calculated path
 function addLinestoMap(map, points){
     const geojson = {
         'type': 'FeatureCollection',
@@ -45,6 +42,7 @@ function addLinestoMap(map, points){
     });
 }
 
+// Remove existing line on the map
 function removeLine(map){
     if (map.getSource('LineString') && map.getLayer('LineString'))
     {
@@ -53,6 +51,7 @@ function removeLine(map){
     }
 }
 
+// Add a searchbar on the map, users can search and fly to the desired location
 function addSearchbar(map){
     var geocoder_api = {
         forwardGeocode: async (config) => {
@@ -99,35 +98,6 @@ function addSearchbar(map){
     );
 }
 
-function sendRequest(start, end) {
-    var result = null;
-    const src = start;
-    const dest = end;
-    const min_max = 1;
-    const percentage = 100;
-    fetch("http://localhost:8080/get_route", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify({
-            Source: src,
-            Destination: dest,
-            Min_max: min_max,
-            Percentage: percentage,
-        }),
-    })
-    .then((res) => res.json())
-    .then((json) => {
-        result = json["Route"];
-        console.log(json["Route"]);
-//        console.log(json["Distance"]);
-//        console.log(json["Elevation Gain"]);
-    });
-    return result;
-}
-
 class App extends Component {
     mapIsReadyCallback(map) {
         var result = null;
@@ -136,6 +106,7 @@ class App extends Component {
         var percent = null;
         var dest = null;
         var markerHeight = 50, markerRadius = 10, linearOffset = 25;
+        // Set popup style
         var popupOffsets = {
             'top': [0, 0],
             'top-left': [0,0],
@@ -146,16 +117,22 @@ class App extends Component {
             'left': [markerRadius, (markerHeight - markerRadius) * -1],
             'right': [-markerRadius, (markerHeight - markerRadius) * -1]
         };
+        // Disable double click zoom and drag rotate
         map.doubleClickZoom.disable();
         map.dragRotate.disable();
+        // Create makers to show the startpoint and destination
         const startpoint = new Marker().setLngLat([0,0]).addTo(map);
         const destination = new Marker({color: " #fed766"}).setLngLat([0,0]).addTo(map);
+        // Create readonly inputfields to show the position of startpoint and destination
         const beginning_inputfield = document.getElementById('Beginning');
         const destination_inputfield = document.getElementById('Destination');
+        // Create a button to start calculation
         const Btn1 = document.getElementById('StartBtn');
         var points = [[-72.49733, 42.36881], [-72.49733, 42.36781]];
+        // Create popups to show the positions of selected points
         var popup1 = new maplibregl.Popup({offset: popupOffsets, closeButton: false, closeOnClick:false});
         var popup2 = new maplibregl.Popup({offset: popupOffsets, closeButton: false, closeOnClick:false});
+        // Create maker and popup when left click on the map
         map.on("click", function(e) {
             popup1.setLngLat(e.lngLat).setText("Beginning: " + e.lngLat.toString().slice(6)).setMaxWidth("300px").addTo(map);
             removeLine(map);
@@ -163,6 +140,7 @@ class App extends Component {
             startpoint.setLngLat(e.lngLat);
             points[0] = [e.lngLat.lng, e.lngLat.lat];
         });
+        // Create maker and popup when right click on the map
         map.on("contextmenu", function(e) {
             popup2.setLngLat(e.lngLat).setText("Destination: " + e.lngLat.toString().slice(6)).setMaxWidth("300px").addTo(map);
             removeLine(map);
@@ -170,6 +148,7 @@ class App extends Component {
             destination.setLngLat(e.lngLat);
             points[1] = [e.lngLat.lng, e.lngLat.lat];
         });
+        // Send data to backend and display the result received
         Btn1.addEventListener('click', function() {
             removeLine(map);
             src = [startpoint.getLngLat().lng, startpoint.getLngLat().lat];
@@ -197,7 +176,6 @@ class App extends Component {
              });
         });
         addSearchbar(map);
-//        addLinestoMap(map, points);
     }
 
     render() {
@@ -206,5 +184,4 @@ class App extends Component {
         );
     }
 }
-//
 render(<App />, document.getElementById('root'));
