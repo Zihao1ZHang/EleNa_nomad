@@ -46,15 +46,6 @@ root,
 /*    animation-iteration-count: infinite;*/
 }
 
-ul li {
-    display: block;
-    background-color: #264653;
-  }
-  
-  li:active {
-    background-color: rgb(131, 131, 133);
-  }
-  
 .mapboxgl-popup {
     max-width: 200px;
 /*    color: rgba(0,0,0,0.6);*/
