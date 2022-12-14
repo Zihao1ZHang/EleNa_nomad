@@ -9,18 +9,15 @@ class NodeWrapper(object):
         self.is_max = is_max
 
     def __lt__(self, other):
-        """Operation override for the less than operation to compare two objects of the same type.
+        """Operation override for the less than or more than operation to compare two 
+            objects of the same type, based on is_max parameter.
 
         Args:
-            other: another object of the NodeIdWrapper time, with which current object has to be compared
+            other: another object of the NodeWrapper, with which current object has to be compared
 
         Returns:
-            A boolean representing if the current node is less than the other node
+            A boolean representing if the current node is less than or more than the other node
         """
-
-        # print("find max elevation")
-
-        # return self_heuristic_dist > other_heuristic_dist
         if self.is_max:
             self_heuristic_dist = self.curr_dist + \
                 (self.elevation * 15) - self.pred_dist
@@ -32,8 +29,4 @@ class NodeWrapper(object):
                 (self.elevation * 15) + self.pred_dist
             other_heuristic_dist = other.curr_dist + \
                 (other.elevation * 15) + other.pred_dist
-            # self_heuristic_dist = self.elevation + self.pred_dist
-            # other_heuristic_dist = other.elevation + other.pred_dist
-            # self_heuristic_dist = self.curr_dist + self.pred_dist
-            # other_heuristic_dist = other.curr_dist + other.pred_dist
             return self_heuristic_dist < other_heuristic_dist

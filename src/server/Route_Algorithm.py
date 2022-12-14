@@ -1,13 +1,31 @@
 from utils import *
 from model.GeoDataModel import GeoData
 from model.keys import google_elevation_api_key
-from algorithm.genetic_algorithm import GeneticAlgorithm
+from algorithm.Genetic_algorithm import GeneticAlgorithm
 from algorithm.Astar_algorithm import Astar
 from algorithm.Dijkstra_algorithm import Dijkstra
 from algorithm.Shortest_algorithm import Shortest
 
 
 def find_route(source, dest, method, percentage=1, is_max=1):
+    """ The method returns a Route object representing the final route that satisfies the specified 
+        requirements. The route is chosen from among those calculated using the A* algorithm, 
+        the Dijkstra algorithm, and the genetic algorithm. 
+
+    Args:
+        source (int): node id for the start node
+        dest (int): node id for the destination node
+        method (char): if method == 'S' return the shortest route
+        percentage (float):  a percentage value that is used in the calculation of the distance limit
+                        for the elevation gain routing methods. The distance limit is calculated as 
+                        (1 + percentage) * shortest_route.length, where shortest_route.length is the 
+                        length of the shortest route. Defaults to 1.
+        is_max (bool): a boolean value that determines whether the method should return the maximum
+                        elevation gain or minimum elevation gain. Defaults to 1
+
+    Returns:
+        route (Route obejct): Route object with the maximum or minimum elevation gain value.
+    """
     # Initialize Geo map
     G = GeoData(source, dest, google_elevation_api_key)
 
@@ -43,10 +61,3 @@ def find_route(source, dest, method, percentage=1, is_max=1):
     final_route = get_result(is_max, routes)
 
     return final_route
-
-
-if __name__ == "__main__":
-    source = [-72.50962524612441, 42.375880221431004]
-    dest = [-72.49934702117964, 42.370442879663926]
-
-    route1 = find_route(source, dest, method='A', percentage=1.5, is_max=1)

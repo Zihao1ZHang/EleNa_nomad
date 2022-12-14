@@ -8,6 +8,11 @@ CORS(app)
 
 @app.route('/get_route', methods=['POST'])
 def get_route():
+    """Method for handle routing request from client
+
+    Returns:
+        response object contains the path corrdinate 
+    """
     # process the json file
     content = request.get_json()
     source = content['Source']

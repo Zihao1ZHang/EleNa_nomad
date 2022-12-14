@@ -1,16 +1,23 @@
-import sys
-sys.path.insert(0, '../../server')
-from algorithm.RoutingAlgorithm import RoutingAlgorithm
-from utils import *
-from model.RouteModel import Route
-from model.NodeWrapperModel import NodeWrapper
-import networkx as nx
 import heapq
+import networkx as nx
+from model.NodeWrapperModel import NodeWrapper
+from model.RouteModel import Route
+from utils import *
+from algorithm.RoutingAlgorithm import RoutingAlgorithm
 import sys
 sys.path.insert(0, '../../server')
 
 
 class Astar(RoutingAlgorithm):
+    """Class to perform the complete weighted A* search
+
+    Attributes:
+        Geodata: The instance of Geodatamodel, contains data for the search area,
+                starting point, and destination point
+        distance_limit: the max distance that the aglorithm can go
+        is_max: find the max elevation of minimum elevation
+    """
+
     def __init__(self, Geodata, distance_limit, is_max):
         self.G = Geodata.geodata
         self.start = Geodata.source
@@ -18,7 +25,35 @@ class Astar(RoutingAlgorithm):
         self.distance_limit = distance_limit
         self.is_max = is_max
 
+    def get_heuristic_distance(G, node1, node2):
+        """ This function calculates the heuristic distance between two nodes in a graph G. 
+            The distance is calculated using the great circle distance formula. The nodes are 
+            specified by their indices node1 and node2 in the list of nodes of the graph G. 
+            The function returns the heuristic distance between the two nodes.
+
+        Args:
+            G (GoeData object): model that contains data of searching area, start, and end point
+            start (int): node id for the one node
+            end (int): node id for the other node
+
+        Returns:
+            circle_dist(float) : the heuristic distance between the two nodes
+        """
+        n1 = G.nodes()[node1]
+        n2 = G.nodes()[node2]
+
+        circle_dist = ox.distance.great_circle_vec(
+            n1['y'], n1['x'], n2['y'], n2['x'])
+        return circle_dist
+
     def search(self,):
+        """The function to execute weeighted A* algorithm 
+
+        Returns:
+            astar_route(Route object) : the obejct that contains the route's path, 
+                                    length, and elevation gain
+            None : if did not find the route
+        """
         print("Using Astar Algorithm")
         open_list = [NodeWrapper(self.start, self.is_max)]
         close_list = set()
@@ -49,10 +84,8 @@ class Astar(RoutingAlgorithm):
                 if distance <= self.distance_limit:
                     flag = successor in visited_node
                     pred_distance = distance + \
-                        get_heuristic_distance(
+                        self.get_heuristic_distance(
                             self.G, successor, self.end)
-                    # elevation_gain = curr_node.elevation + \
-                    #     get_elevation_gain(Geo.geodata, curr_node.id, successor)
                     elevation_gain = curr_node.elevation + \
                         get_elevation_gain(
                             self.G, curr_node.id, successor)
