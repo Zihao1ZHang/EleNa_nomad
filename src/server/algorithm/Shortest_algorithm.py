@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, '../../server')
 from algorithm.RoutingAlgorithm import RoutingAlgorithm
 from utils import *
 from model.RouteModel import Route
