@@ -100,6 +100,7 @@
                   </fieldset>
                   <script>
                 const listItems = document.querySelectorAll('.interface ul li');
+
                 listItems.forEach(item => {
                 item.addEventListener('click', () => {
                     // When the first button is clicked, reset the background color of all buttons to their initial value.
@@ -109,10 +110,13 @@
                     });
                     }
 
-                    // When the second or third button is clicked, reset the background color of the previous button to its initial value.
+                    // When the second button is clicked, reset the background color of the third button to its initial value.
                     if (item === listItems[1]) {
-                    listItems[0].style.backgroundColor = '';
-                    } else if (item === listItems[2]) {
+                    listItems[2].style.backgroundColor = '';
+                    }
+
+                    // When the third button is clicked, reset the background color of the previous button to its initial value.
+                    if (item === listItems[2]) {
                     listItems[1].style.backgroundColor = '';
                     }
 
