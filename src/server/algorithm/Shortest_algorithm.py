@@ -10,7 +10,7 @@ class Shortest(RoutingAlgorithm):
     """ Class to perform the shortest route algorithm using ox.shortest_path API
 
     Args:
-        G (GoeData object): a GoeData object that contains data about the search area, 
+        G (GoeData object): a GoeData object that contains data about the search area,
                             including the start and end points.
     """
 
@@ -24,7 +24,7 @@ class Shortest(RoutingAlgorithm):
 
         Returns:
             Returns:
-            shortest_route (Route object) : the obejct that contains the route's path, 
+            shortest_route (Route object) : the obejct that contains the route's path,
                                     length, and elevation gain
         """
         route = ox.shortest_path(self.G, self.start,

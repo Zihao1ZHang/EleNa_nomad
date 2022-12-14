@@ -8,17 +8,17 @@ from algorithm.Shortest_algorithm import Shortest
 
 
 def find_route(source, dest, method, percentage=1, is_max=1):
-    """ The method returns a Route object representing the final route that satisfies the specified 
-        requirements. The route is chosen from among those calculated using the A* algorithm, 
-        the Dijkstra algorithm, and the genetic algorithm. 
+    """ The method returns a Route object representing the final route that satisfies the specified
+        requirements. The route is chosen from among those calculated using the A* algorithm,
+        the Dijkstra algorithm, and the genetic algorithm.
 
     Args:
         source (int): node id for the start node
         dest (int): node id for the destination node
         method (char): if method == 'S' return the shortest route
         percentage (float):  a percentage value that is used in the calculation of the distance limit
-                        for the elevation gain routing methods. The distance limit is calculated as 
-                        (1 + percentage) * shortest_route.length, where shortest_route.length is the 
+                        for the elevation gain routing methods. The distance limit is calculated as
+                        (1 + percentage) * shortest_route.length, where shortest_route.length is the
                         length of the shortest route. Defaults to 1.
         is_max (bool): a boolean value that determines whether the method should return the maximum
                         elevation gain or minimum elevation gain. Defaults to 1

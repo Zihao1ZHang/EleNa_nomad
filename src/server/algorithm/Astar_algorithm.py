@@ -14,8 +14,8 @@ class Astar(RoutingAlgorithm):
     Attributes:
         Geodata: The instance of Geodatamodel, contains data for the search area,
                 starting point, and destination point
-        distance_limit: the max distance that the aglorithm can go
-        is_max: find the max elevation of minimum elevation
+        distance_limit: The max distance that the aglorithm can go
+        is_max: Find the max elevation or minimum elevation
     """
 
     def __init__(self, Geodata, distance_limit, is_max):
@@ -25,10 +25,10 @@ class Astar(RoutingAlgorithm):
         self.distance_limit = distance_limit
         self.is_max = is_max
 
-    def get_heuristic_distance(G, node1, node2):
-        """ This function calculates the heuristic distance between two nodes in a graph G. 
-            The distance is calculated using the great circle distance formula. The nodes are 
-            specified by their indices node1 and node2 in the list of nodes of the graph G. 
+    def get_heuristic_distance(self, G, node1, node2):
+        """ This function calculates the heuristic distance between two nodes in a graph G.
+            The distance is calculated using the great circle distance formula. The nodes are
+            specified by their indices node1 and node2 in the list of nodes of the graph G.
             The function returns the heuristic distance between the two nodes.
 
         Args:
@@ -47,10 +47,10 @@ class Astar(RoutingAlgorithm):
         return circle_dist
 
     def search(self,):
-        """The function to execute weeighted A* algorithm 
+        """The function to execute weeighted A* algorithm
 
         Returns:
-            astar_route(Route object) : the obejct that contains the route's path, 
+            astar_route(Route object) : the obejct that contains the route's path,
                                     length, and elevation gain
             None : if did not find the route
         """

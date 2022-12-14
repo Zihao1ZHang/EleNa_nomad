@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import MyMap from './mapcomponents/map';
-import SideBar from "./mapcomponents/sidebar";
 import './style.css';
 import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
-import maplibregl, { Marker, LngLatBounds } from 'maplibre-gl';
+import maplibregl, { Marker } from 'maplibre-gl';
 import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 
 
@@ -97,6 +96,7 @@ function addSearchbar(map){
             new MaplibreGeocoder(geocoder_api, {marker: false})
     );
 }
+
 
 class App extends Component {
     mapIsReadyCallback(map) {

@@ -4,11 +4,17 @@ from algorithm.RoutingAlgorithm import RoutingAlgorithm
 from utils import *
 from model.RouteModel import Route
 import networkx as nx
-import sys
-sys.path.insert(0, '../../server')
 
 
 class Dijkstra(RoutingAlgorithm):
+    """Class to perform the Dijkstra algorithm considering elevation
+
+    Attributes:
+    Geo: The instance of Geodatamodel, contains data for the search area,
+    distance_limit: The max distance that the aglorithm can go
+    is_max: Find the max elevation or minimum elevation
+    """
+
     def __init__(self, Geo, distance_limit, is_max=True):
         self.G = Geo.geodata
         self.start = Geo.source
@@ -17,6 +23,14 @@ class Dijkstra(RoutingAlgorithm):
         self.is_max = is_max
 
     def search(self, elevation_factor, cur_iteration):
+        """The function to execute the Dijkstra algorithm considering elevation
+
+        Returns:
+        dijkstra_route(Route object) : the obejct that contains the route's path,
+        length, and elevation gain
+        None : if did not find the route
+        """
+        # return None when cur_iteration is equal to zero
         if cur_iteration == 0:
             return None
         unvisited_nodes = []
@@ -39,6 +53,7 @@ class Dijkstra(RoutingAlgorithm):
             unvisited_nodes.remove(current_node)
             for n in nx.neighbors(self.G, current_node):
                 if n in unvisited_nodes:
+                    # consider elevation gain
                     if self.is_max:
                         temp = dist[current_node] + get_length(
                             self.G, current_node, n) - elevation_factor * get_elevation_gain(G=self.G, start=self.start, end=self.end)
@@ -56,6 +71,7 @@ class Dijkstra(RoutingAlgorithm):
             path.append(current_node)
             current_node = prev[current_node]
         if get_path_length(self.G, path[::-1]) > self.distance_limit:
+            # perform the algorithm recursively with modified elevation_factor and decreased cur_iteration if the length exceeds the limitation
             return self.search(elevation_factor/1.5, cur_iteration - 1)
         path = path[::-1]
         routes = get_route_coord(self.G, path)
