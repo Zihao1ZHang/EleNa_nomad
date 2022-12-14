@@ -99,19 +99,34 @@
                     </ul>
                   </fieldset>
                   <script>
-                    const listItems = document.querySelectorAll('.interface ul li');
+                const listItems = document.querySelectorAll('.interface ul li');
 
-                    listItems.forEach(item => {
-                    item.addEventListener('click', () => {
-                        // Reset the background color of all buttons to the initial value.
-                        listItems.forEach(b => {
+                listItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // When the first button is clicked, reset the background color of all buttons to their initial value.
+                    if (item === listItems[0]) {
+                    listItems.forEach(b => {
                         b.style.backgroundColor = '';
-                        });
+                    });
+                    }
 
-                        // Change the background color of the clicked button.
-                        item.style.backgroundColor = '#ccc';
-                    });
-                    });
+                    // When the second button is clicked, reset the background color of the third button to its initial value.
+                    if (item === listItems[1]) {
+                    listItems[2].style.backgroundColor = '';
+                    }
+
+                    // When the third button is clicked, reset the background color of the previous button to its initial value.
+                    if (item === listItems[2]) {
+                    listItems[1].style.backgroundColor = '';
+                    }
+
+                    // Change the background color of the clicked button.
+                    item.style.backgroundColor = '#ccc';
+                });
+                });
+
+
+
 
                   </script>
                 </select>
