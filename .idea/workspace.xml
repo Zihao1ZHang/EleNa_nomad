@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8affd583-2983-482d-a4ab-0ae99c133a13" name="变更" comment="">
-      <change beforePath="$PROJECT_DIR$/src/server/algorithm/Astar_algorithm.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/algorithm/Astar_algorithm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

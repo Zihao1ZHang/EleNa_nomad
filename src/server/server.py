@@ -23,7 +23,6 @@ def get_route():
     if is_max == "Shortest Route":
         method = 'S'
     elif is_max == "Max Elevation":
-        print("maxxxxx")
         is_max = True
     else:
         is_max = False
