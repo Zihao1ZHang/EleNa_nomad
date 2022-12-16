@@ -12,16 +12,23 @@ class GeoData(object):
             map data in the searching area
     """
 
-    def __init__(self, source, dest, key, G=None):
+    def __init__(self, source, dest, key, G=None, test=False):
         """ The __init__ method initializes a new GeoData object by setting the geodata attribute
             to the G argument, or to a new MultiDiGraph object created using the bounding box 
             defined by the source and dest coordinates.
         """
-        G = ox.graph_from_bbox(north=max(source[1], dest[1])+0.01, south=min(
-            source[1], dest[1])-0.01, east=max(source[0], dest[0])+0.01, west=min(source[0], dest[0])-0.01)
-        G = ox.elevation.add_node_elevations_google(
-            G, api_key=key)
-        G = ox.elevation.add_edge_grades(G)
+        self.test = test
+        if G == None:
+            G = ox.graph_from_bbox(north=max(source[1], dest[1])+0.01, south=min(
+                source[1], dest[1])-0.01, east=max(source[0], dest[0])+0.01, west=min(source[0], dest[0])-0.01)
+            G = ox.elevation.add_node_elevations_google(
+                G, api_key=key)
+            G = ox.elevation.add_edge_grades(G)
         self.geodata = G
-        self.source = ox.nearest_nodes(G, source[0], source[1])
-        self.dest = ox.nearest_nodes(G, dest[0], dest[1])
+        if test == True:
+            self.source = source
+            self.dest = dest
+        else:
+            self.source = ox.nearest_nodes(G, source[0], source[1])
+            self.dest = ox.nearest_nodes(G, dest[0], dest[1])
+            

@@ -52,7 +52,9 @@ class GeneticAlgorithm(object):
         if self.is_max is True:
             elevation_gain = get_path_elevation(self.geodata, route)
         else:
-            elevation_gain = 10000/get_path_elevation(self.geodata, route)
+            elevation_gain = get_path_elevation(self.geodata, route)
+            if elevation_gain != 0:
+                elevation_gain = 10000/get_path_elevation(self.geodata, route)
         distance = get_path_length(self.geodata, route)
         if distance > self.distance_limit:
             return elevation_gain / distance
@@ -174,7 +176,7 @@ class GeneticAlgorithm(object):
         """
         population = []
         # Randomly select a node in the graph and connect startpoint, this node and destination using shortest route
-        rand_node_list = random.sample(list(self.geodata.nodes.keys()), num)
+        rand_node_list = random.choices(list(self.geodata.nodes.keys()))
         for node in rand_node_list:
             route1, _, _ = self.dijkstra_find_route(self.geodata, self.orig_node, node)
             route2, _, _ = self.dijkstra_find_route(self.geodata, node, self.dest_node)
