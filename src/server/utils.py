@@ -15,8 +15,8 @@ def get_length(G, start, end):
     Returns:
         float: the length of two adjacent nodes
     """
-    if nx.is_path(G, [start, end]) == False:
-        raise Exception("nodes are not adjacent")
+    if start not in G or end not in G:
+        raise Exception("nodes missing")
 
     return G.edges[start, end, 0]['length']
 
@@ -75,8 +75,8 @@ def get_elevation_gain(G, start, end):
     Returns:
         elevation (float) : the elevation gain of two nodes
     """
-    # if nx.is_path(G, [start, end]) == False:
-    #     raise Exception("nodes are not adjacent")
+    if start not in G or end not in G:
+        raise Exception("nodes missing")
     if start == end:
         return 0
     return G.nodes()[start]['elevation'] - G.nodes()[end]['elevation']
