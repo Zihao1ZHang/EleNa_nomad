@@ -7,14 +7,9 @@ import unittest
 import pytest
 import os
 import sys
-# os.chdir("")
-# folder = sys.path.path(__file__).abspath()
-# sys.path.insert(0, folder.parent.parent)
-# sys.path.insert(0, '/src')
 
 
 class TestUtil(unittest.TestCase):
-
     # Simple G
     G = nx.MultiDiGraph()
     G.add_node(1, x='A', y='TEST', elevation=0)
@@ -30,12 +25,6 @@ class TestUtil(unittest.TestCase):
     G_disconnected.add_node(2, x='B', y='TEST', elevation=10)
     G_disconnected.add_node(3, x='C', y='TEST', elevation=20)
     G_disconnected.add_edge(1, 2, length=2.0)
-
-    # pos = nx.spring_layout(G)
-    # nx.draw(G, pos, with_labels=True, connectionstyle='arc3, rad = 0.1')
-    # edge_labels=dict([((u,v,),d['length'])
-    #          for u,v,d in G.edges(data=True)])
-    # plt.show()
 
     """ Test utils.py functions """
 
@@ -100,9 +89,3 @@ class TestUtil(unittest.TestCase):
             get_path_elevation(self.G_disconnected, path1)
             get_path_elevation(self.G_disconnected, path2)
             get_path_elevation(self.G_disconnected, path3)
-
-
-if __name__ == "__main__":
-    sys.path.insert(0, '../src/server')
-    # sys.path.append("../src/server")
-    unittest.main()

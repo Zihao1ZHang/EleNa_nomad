@@ -75,8 +75,8 @@ def get_elevation_gain(G, start, end):
     Returns:
         elevation (float) : the elevation gain of two nodes
     """
-    if nx.is_path(G, [start, end]) == False:
-        raise Exception("nodes are not adjacent")
+    # if nx.is_path(G, [start, end]) == False:
+    #     raise Exception("nodes are not adjacent")
     if start == end:
         return 0
     return G.nodes()[start]['elevation'] - G.nodes()[end]['elevation']

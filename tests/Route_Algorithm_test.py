@@ -46,12 +46,6 @@ class TestRouteAlgorithms(unittest.TestCase):
     G_disconnected.add_node(3, x='C', y='TEST', elevation=20)
     G_disconnected.add_edge(1, 2, length=2.0)
 
-    # pos = nx.spring_layout(G)
-    # nx.draw(G, pos, with_labels=True, connectionstyle='arc3, rad = 0.1')
-    # edge_labels=dict([((u,v,),d['length'])
-    #          for u,v,d in G.edges(data=True)])
-    # plt.show()
-
     # Define the source, destination
     def InitializeModel(self, source, dest, G, percentage=1):
         self.geoDataModel = GeoData(
@@ -69,8 +63,6 @@ class TestRouteAlgorithms(unittest.TestCase):
     """ Same Start and End Node """
 
     def test_Dijkstra_AA(self):
-        # Initialize routes with same source and destination
-        #self.distance_limit = 0.0
         self.InitializeModel(1, 1, self.G)
 
         # All routes found
@@ -92,7 +84,6 @@ class TestRouteAlgorithms(unittest.TestCase):
 
     def test_AStar_AA(self):
         # Initialize routes with same source and destination
-        #self.distance_limit = 0.0
         self.InitializeModel(1, 1, self.G)
 
         # All routes found
@@ -147,6 +138,3 @@ class TestRouteAlgorithms(unittest.TestCase):
         assert routeGenetic != None
         assert get_path_elevation(G, routeGenetic.path) == 0.0
 
-
-if __name__ == "__main__":
-    unittest.main()

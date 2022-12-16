@@ -15,6 +15,7 @@ def get_route():
     """
     # process the json file
     content = request.get_json()
+
     source = content['Source']
     dest = content['Destination']
     is_max = content['Is_max']

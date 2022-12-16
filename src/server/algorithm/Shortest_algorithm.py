@@ -1,7 +1,7 @@
 import osmnx as ox
-from src.server.model.RouteModel import Route
-from src.server.utils import *
-from src.server.algorithm.RoutingAlgorithm import RoutingAlgorithm
+from model.RouteModel import Route
+from utils import *
+from algorithm.RoutingAlgorithm import RoutingAlgorithm
 import sys
 sys.path.insert(0, '../../server')
 
