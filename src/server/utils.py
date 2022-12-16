@@ -33,7 +33,7 @@ def get_path_length(G, node_list):
     Returns:
         length (float) : the total length of the path
     """
-    if node_list == None or all(isinstance(item, int) for item in node_list) == False or nx.is_path(G, node_list) == False:
+    if node_list == None or nx.is_path(G, node_list) == False:
         raise Exception("not a valid path")
     length = 0
     for i in range(len(node_list) - 1):
@@ -53,8 +53,8 @@ def get_path_elevation(G, node_list):
     Returns:
         total_elevation (float) : the total elevation gain of the path 
     """
-    if node_list == None or all(isinstance(item, int) for item in node_list) == False or nx.is_path(G, node_list) == False:
-        raise Exception("not a valid path")
+    if node_list == None or nx.is_path(G, node_list) == False:
+        raise Exception("not a valid path:" + str(node_list))
     total_elevation = 0
     for i in range(len(node_list) - 1):
         curr_elevation = get_elevation_gain(G, node_list[i], node_list[i + 1])
