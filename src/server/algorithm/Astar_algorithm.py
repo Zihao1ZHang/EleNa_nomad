@@ -74,6 +74,8 @@ class Astar(RoutingAlgorithm):
                 route_length = get_path_length(self.G, path)
                 elevation_g = get_path_elevation(self.G, path)
                 astar_route = Route(routes, route_length, elevation_g)
+                if route_length > self.distance_limit:
+                    return None
                 return astar_route
 
             successors = filter(lambda n: n not in close_list,
