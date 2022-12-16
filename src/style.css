@@ -19,8 +19,8 @@ root,
 
 .interface {
     font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    height: 100%;
-    width: 20%;
+    height: 55%;
+    width: 25%;
     position: fixed;
     z-index: 1;
     top: 0;
@@ -28,7 +28,7 @@ root,
     overflow-x: hidden;
     padding: 10px 10px;
     color: #ffffff;
-    background-color: #264653;
+    background-color: #035a9d7d;
 /*    background: linear-gradient(*/
 /*            90deg,*/
 /*            #f9d923,*/
@@ -48,7 +48,7 @@ root,
 
 ul li {
     display: block;
-    background-color: #264653;
+    background-color: #035a9d7d;
   }
   
   li:active {
