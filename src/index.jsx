@@ -153,7 +153,7 @@ class App extends Component {
             removeLine(map);
             src = [startpoint.getLngLat().lng, startpoint.getLngLat().lat];
             dest =  [destination.getLngLat().lng, destination.getLngLat().lat];
-            goal = document.getElementById("goal").value;
+            goal = document.querySelector('#goals input:checked').value;
             percent = document.getElementById("percentage").value;
             fetch("http://localhost:8080/get_route", {
                 method: "POST",
