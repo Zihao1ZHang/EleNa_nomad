@@ -27,8 +27,8 @@ class GeoData(object):
                     G, api_key=key)
                 G = ox.elevation.add_edge_grades(G)
             except HttpError as error:
-                raise Exception("Invalid API key")
-                print(f'An error occurred: {error}')
+                raise Exception("Invalid API key" + str(error))
+            
         self.geodata = G
         if test == True:
             self.source = source
