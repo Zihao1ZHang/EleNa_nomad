@@ -132,7 +132,7 @@ class TestRouteAlgorithms(unittest.TestCase):
     # Expect path to be empty if nodes are the same or close
     def test_genetic_AA(self):
         #self.distance_limit = 0.0
-        self.InitializeModel(1, 1, self.G)
+        self.InitializeModel(1, 3, self.G)
 
         routeGenetic = self.genetic.cal_result()
 
