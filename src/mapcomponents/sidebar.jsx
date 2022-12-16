@@ -8,9 +8,9 @@ class SideBar extends React.Component {
         };
       }
     
-      
-      handleGoalChange = (event) => {
         // Update selectedGoal state whenever a new goal is selected
+
+      handleGoalChange = (event) => {
         this.setState({ selectedGoal: event.target.value });
       }
       render() {
