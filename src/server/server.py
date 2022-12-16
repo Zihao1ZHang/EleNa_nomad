@@ -20,14 +20,13 @@ def get_route():
     is_max = content['Is_max']
     percent = content['Percentage']
     method = ''
-
-    if is_max == "Shortest route":
+    if is_max == "Shortest Route":
         method = 'S'
-    elif is_max == "Max elevation":
+    elif is_max == "Max Elevation":
+        print("maxxxxx")
         is_max = True
     else:
         is_max = False
-
     # run the routing algortihm
     route = find_route(source, dest, method=method,
                        percentage=float(percent)/100, is_max=is_max)
