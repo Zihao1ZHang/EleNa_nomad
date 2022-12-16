@@ -1,15 +1,25 @@
-from src.server.utils import *
-import matplotlib.pyplot as plt
-import networkx as nx
-import osmnx as ox
-
-import unittest
 import pytest
-import os
+import unittest
+import osmnx as ox
 import sys
+import networkx as nx
+import matplotlib.pyplot as plt
 
+sys.path.append('C:/Users/erich/Documents/2022_FALL/CS520_Software_Engineering/final/EleNa_nomad/src/server')
+sys.path.append('../src')
+from utils import *
+from model.GeoDataModel import GeoData
+from model.RouteModel import Route
+from model.keys import google_elevation_api_key
+import Route_Algorithm as RA
+
+from algorithm.genetic_algorithm import GeneticAlgorithm
+from algorithm.Astar_algorithm import Astar
+from algorithm.Dijkstra_algorithm import Dijkstra
+from algorithm.Shortest_algorithm import Shortest
 
 class TestUtil(unittest.TestCase):
+
     # Simple G
     G = nx.MultiDiGraph()
     G.add_node(1, x='A', y='TEST', elevation=0)
@@ -26,8 +36,13 @@ class TestUtil(unittest.TestCase):
     G_disconnected.add_node(3, x='C', y='TEST', elevation=20)
     G_disconnected.add_edge(1, 2, length=2.0)
 
-    """ Test utils.py functions """
+    # pos = nx.spring_layout(G)
+    # nx.draw(G, pos, with_labels=True, connectionstyle='arc3, rad = 0.1')
+    # edge_labels=dict([((u,v,),d['length'])
+    #          for u,v,d in G.edges(data=True)])
+    # plt.show()
 
+    """ Test utils.py functions """
     def test_get_length(self):
         assert get_length(self.G, 1, 2) == 2.0
         assert get_length(self.G, 2, 3) == 2.0
@@ -47,7 +62,7 @@ class TestUtil(unittest.TestCase):
         assert get_path_length(self.G, path2) == 5.0
         assert get_path_length(self.G, path3) == 2.0
         assert get_path_length(self.G, path4) == 2.0
-
+    
     def test_get_path_length_FAIL(self):
         path1 = [1, 3]
         path2 = [2, 3]
@@ -66,8 +81,8 @@ class TestUtil(unittest.TestCase):
 
     def test_get_elevation_gain_FAIL(self):
         with self.assertRaises(Exception) as context:
-            get_elevation_gain(self.G_disconnected, 1, 3)
-            get_elevation_gain(self.G_disconnected, 2, 3)
+            get_elevation_gain(self.G_disconnected, 1, 5)
+            get_elevation_gain(self.G_disconnected, 2, 7)
 
     def test_get_path_elevation(self):
         path1 = [1, 2, 3]
@@ -81,11 +96,14 @@ class TestUtil(unittest.TestCase):
 
     def test_get_path_elevation_FAIL(self):
         path1 = [1, 3]
-        path2 = [2, 3]
-        path3 = [1, 2, 3]
+        path2 = [0, 3]
+        path3 = [8, 45, 7]
         with self.assertRaises(Exception) as context:
             get_path_elevation(self.G_disconnected, None)
             get_path_elevation(self.G_disconnected, [])
             get_path_elevation(self.G_disconnected, path1)
             get_path_elevation(self.G_disconnected, path2)
             get_path_elevation(self.G_disconnected, path3)
+
+if __name__ == "__main__":
+    unittest.main()
