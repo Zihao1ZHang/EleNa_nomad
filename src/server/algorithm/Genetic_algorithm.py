@@ -1,8 +1,8 @@
 from tqdm import tqdm
 import random
 import networkx as nx
-from model.RouteModel import Route
-from utils import *
+from src.server.model.RouteModel import Route
+from src.server.utils import *
 import math
 import sys
 sys.path.insert(0, '../../server')

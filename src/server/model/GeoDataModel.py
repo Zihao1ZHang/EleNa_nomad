@@ -1,5 +1,5 @@
 import osmnx as ox
-from googleapiclient.errors import HttpError
+# from googleapiclient.errors import HttpError
 
 
 class GeoData(object):
@@ -20,14 +20,14 @@ class GeoData(object):
         """
         self.test = test
         if G == None:
-            try:
-                G = ox.graph_from_bbox(north=max(source[1], dest[1])+0.01, south=min(
-                    source[1], dest[1])-0.01, east=max(source[0], dest[0])+0.01, west=min(source[0], dest[0])-0.01)
-                G = ox.elevation.add_node_elevations_google(
-                    G, api_key=key)
-                G = ox.elevation.add_edge_grades(G)
-            except HttpError as error:
-                raise Exception("Invalid API key" + str(error))
+            # try:
+            G = ox.graph_from_bbox(north=max(source[1], dest[1])+0.01, south=min(
+                source[1], dest[1])-0.01, east=max(source[0], dest[0])+0.01, west=min(source[0], dest[0])-0.01)
+            G = ox.elevation.add_node_elevations_google(
+                G, api_key=key)
+            G = ox.elevation.add_edge_grades(G)
+            # except HttpError as error:
+            #     raise Exception("Invalid API key" + str(error))
             
         self.geodata = G
         if test == True:

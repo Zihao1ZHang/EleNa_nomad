@@ -5,7 +5,6 @@ from model.RouteModel import Route
 app = Flask(__name__)
 CORS(app)
 
-
 @app.route('/get_route', methods=['POST'])
 def get_route():
     """Method for handle routing request from client

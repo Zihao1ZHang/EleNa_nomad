@@ -1,8 +1,8 @@
 import sys
 sys.path.insert(0, '../../server')
-from algorithm.RoutingAlgorithm import RoutingAlgorithm
-from utils import *
-from model.RouteModel import Route
+from src.server.algorithm.RoutingAlgorithm import RoutingAlgorithm
+from src.server.utils import *
+from src.server.model.RouteModel import Route
 import networkx as nx
 
 
