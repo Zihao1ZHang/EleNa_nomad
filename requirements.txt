@@ -5,3 +5,5 @@ osmnx~=1.2.2
 scikit-learn
 networkx~=2.8.8
 tqdm~=4.64.1
+pytest
+path

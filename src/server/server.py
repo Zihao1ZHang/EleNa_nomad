@@ -5,17 +5,22 @@ from model.RouteModel import Route
 app = Flask(__name__)
 CORS(app)
 
-
 @app.route('/get_route', methods=['POST'])
 def get_route():
+    """Method for handle routing request from client
+
+    Returns:
+        response object contains the path corrdinate 
+    """
     # process the json file
     content = request.get_json()
+
     source = content['Source']
     dest = content['Destination']
     is_max = content['Is_max']
     percent = content['Percentage']
-
     method = ''
+
     if is_max == "Shortest route":
         method = 'S'
     elif is_max == "Max elevation":
