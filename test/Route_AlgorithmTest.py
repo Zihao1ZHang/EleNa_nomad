@@ -2,19 +2,22 @@ import pytest
 import unittest
 import osmnx as ox
 import sys
+import networkx as nx
+import matplotlib.pyplot as plt
 
-sys.path.insert(1, './src')
-from server.model.GeoDataModel import GeoData
-from server.model.RouteModel import Route
-from server.model.keys import google_elevation_api_key
-import server.Route_Algorithm as RA
+sys.path.append('C:/Users/erich/Documents/2022_FALL/CS520_Software_Engineering/final/EleNa_nomad/src/server')
+from utils import *
+from model.GeoDataModel import GeoData
+from model.RouteModel import Route
+from model.keys import google_elevation_api_key
+import Route_Algorithm as RA
 
-from server.algorithm.genetic_algorithm import GeneticAlgorithm
-from server.algorithm.Astar_algorithm import Astar
-from server.algorithm.Dijkstra_algorithm import Dijkstra
-from server.algorithm.Shortest_algorithm import Shortest
+from algorithm.genetic_algorithm import GeneticAlgorithm
+from algorithm.Astar_algorithm import Astar
+from algorithm.Dijkstra_algorithm import Dijkstra
+from algorithm.Shortest_algorithm import Shortest
 
-class TestRouteAlgorithm(unittest.TestCase):
+class TestRouteAlgorithms(unittest.TestCase):
 
     geoDataModel = None
     routeModel = None
@@ -28,41 +31,149 @@ class TestRouteAlgorithm(unittest.TestCase):
     # Percentage of shortest
     distance_limit = 0
 
-    def InitializeModel(self, source, dest, percentage=1):
-        self.geoDataModel = GeoData(source, dest, google_elevation_api_key)
+    # Simple G with self-loops of length 0
+    G = nx.MultiDiGraph()
+    G.add_node(1, x='A', y='TEST', elevation=0)
+    G.add_node(2, x='B', y='TEST', elevation=10)
+    G.add_node(3, x='C', y='TEST', elevation=20)
+    G.add_edge(1, 3, length=5.0)
+    G.add_edge(1, 2, length=2.0)
+    G.add_edge(2, 3, length=2.0)
+
+    # pos = nx.spring_layout(G)
+    # nx.draw(G, pos, with_labels=True, connectionstyle='arc3, rad = 0.1')
+    # edge_labels=dict([((u,v,),d['length'])
+    #          for u,v,d in G.edges(data=True)])
+    # plt.show()
+
+    # Define the source, destination
+    def InitializeModel(self, source, dest, G, percentage=1):
+        self.geoDataModel = GeoData(source, dest, google_elevation_api_key, G, True)
         self.shortest = Shortest(self.geoDataModel)
         self.distance_limit = self.shortest.search().length
-
 
         self.aStar = Astar(self.geoDataModel, self.distance_limit * percentage, 1)
         self.dijkstra = Dijkstra(self.geoDataModel, self.distance_limit * percentage, 1)
         self.genetic = GeneticAlgorithm(self.geoDataModel, self.distance_limit * percentage, 1)
 
-    def test_InputValidation():
-        pass
 
-    # Each routing algorithm should end up at the same point
-    def test_RouteSameSourceDestination(self):
-        # Initialize routes with source, destination, and maximum distance
-        self.InitializeModel((42.687672, -71.121567), (42.687672, -71.121567))
+    """ Same Start and End Node """
+    def test_Dijkstra_AA(self):
+        # Initialize routes with same source and destination
+        #self.distance_limit = 0.0
+        self.InitializeModel(1, 1, self.G)
         
         # All routes found
-        routeShortest = self.shortest.search()
-        routeAStar = self.aStar.search()
         routeDijkstra = self.dijkstra.search(elevation_factor=10, cur_iteration=100)
-        routeGenetic = self.genetic.cal_result()
-        all_routes = [routeShortest, routeAStar, routeDijkstra, routeGenetic]
+
+        G = self.geoDataModel
 
         # Verify that each route is valid
-        for route in all_routes:
-            if route != None:
-                assert route.length <= self.distance_limit
-                assert route[-1] == self.geoDataModel.dest
+        node = self.geoDataModel.dest
+        assert routeDijkstra != None
+        assert routeDijkstra.length <= self.distance_limit
+        assert routeDijkstra.path[-1] == [G.geodata.nodes()[node]['x'], G.geodata.nodes()[node]['y']]
         
-        # Compare elevation of route determined by elevation
-        # Compare node for node
+        # Verify that all elevation calculations are equal to 0.0
+        assert routeDijkstra != None
+        assert get_path_elevation(G, routeDijkstra.path) == 0.0
+
+    def test_AStar_AA(self):
+        # Initialize routes with same source and destination
+        #self.distance_limit = 0.0
+        self.InitializeModel(1, 1, self.G)
+
+        # All routes found
+        routeAStar = self.aStar.search()
+
+        G = self.geoDataModel
+
+        # Verify that each route is valid
+        node = self.geoDataModel.dest
+        assert routeAStar != None
+        assert routeAStar.length <= self.distance_limit
+        assert routeAStar.path[-1] == [G.geodata.nodes()[node]['x'], G.geodata.nodes()[node]['y']]
         
-    
-    def test_StraightRoute(self):
-        pass
+        # Verify that all elevation calculations are equal to 0.0
+        assert routeAStar != None
+        assert get_path_elevation(G, routeAStar.path) == 0.0
+
+    def test_shortest_AA(self):
+        #self.distance_limit = 0.0
+        self.InitializeModel(1, 1, self.G)
+
+        routeShortest = self.shortest.search()
+
+        G = self.geoDataModel
+
+        node = self.geoDataModel.dest
+        assert routeShortest != None
+        assert routeShortest.length <= self.distance_limit
+        assert routeShortest.path[-1] == [G.geodata.nodes()[node]['x'], G.geodata.nodes()[node]['y']]
         
+        # Verify that all elevation calculations are equal to 0.0
+        assert routeShortest != None
+        assert get_path_elevation(G, routeShortest.path) == 0.0
+
+
+    def test_genetic_AA(self):
+        #self.distance_limit = 0.0
+        self.InitializeModel(1, 1, self.G)
+
+        routeGenetic = self.genetic.cal_result()
+
+        G = self.geoDataModel
+
+        node = self.geoDataModel.dest
+        assert routeGenetic != None
+        assert routeGenetic.length <= self.distance_limit
+        assert routeGenetic.path[-1] == [G.geodata.nodes()[node]['x'], G.geodata.nodes()[node]['y']]
+        
+        # Verify that all elevation calculations are equal to 0.0
+        assert routeGenetic != None
+        assert get_path_elevation(G, routeGenetic.path) == 0.0
+
+
+    # """ Traverse from A to C without factoring in elevation """
+    # def test_Dijkstra_AC(self):
+    #     # Initialize routes with same source and destination
+    #     #self.distance_limit = 5.0
+    #     self.InitializeModel(1, 3, self.G)
+        
+    #     routeDijkstra = self.dijkstra.search(elevation_factor=10, cur_iteration=100)
+
+    #     G = self.geoDataModel
+
+    #     # Verify that each route is valid
+    #     node = self.geoDataModel.dest
+    #     assert routeDijkstra != None
+    #     assert routeDijkstra.length <= self.distance_limit
+    #     assert routeDijkstra.path[-1] == [G.geodata.nodes()[node]['x'], G.geodata.nodes()[node]['y']]
+        
+    #     # Verify that all elevation calculations are equal to 0.0
+    #     assert routeDijkstra != None
+    #     assert get_path_elevation(G, routeDijkstra.path) == 20.0
+
+    # def test_AStar_AC(self):
+    #     # Initialize routes with same source and destination
+    #     #self.distance_limit = 5.0
+    #     self.InitializeModel(1, 3, self.G)
+
+    #     routeAStar = self.aStar.search()
+
+    #     G = self.geoDataModel
+
+    #     # Verify that each route is valid
+    #     node = self.geoDataModel.dest
+    #     assert routeAStar != None
+    #     assert routeAStar.length <= self.distance_limit
+    #     assert routeAStar.path[-1] == [G.geodata.nodes()[node]['x'], G.geodata.nodes()[node]['y']]
+        
+    #     # Verify that all elevation calculations are equal to 0.0
+    #     assert routeAStar != None
+    #     assert get_path_elevation(G, routeAStar.path) == 20.0
+
+
+        
+if __name__ == "__main__":
+    unittest.main()
