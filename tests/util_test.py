@@ -1,16 +1,16 @@
-
 from src.server.utils import *
 import matplotlib.pyplot as plt
 import networkx as nx
 import osmnx as ox
-import os
+
 import unittest
 import pytest
+import os
 import sys
 # os.chdir("")
 # folder = sys.path.path(__file__).abspath()
 # sys.path.insert(0, folder.parent.parent)
-sys.path.insert(0, '/src')
+# sys.path.insert(0, '/src')
 
 
 class TestUtil(unittest.TestCase):

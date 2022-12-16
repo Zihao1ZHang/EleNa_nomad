@@ -16,7 +16,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 # sys.path.append('C:/Users/erich/Documents/2022_FALL/CS520_Software_Engineering/final/EleNa_nomad/src/server')
-sys.path.append('../src/server/')
+# sys.path.append('../src/server/')
 
 
 class TestRouteAlgorithms(unittest.TestCase):

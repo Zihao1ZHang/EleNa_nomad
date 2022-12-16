@@ -1,10 +1,10 @@
-from utils import *
-from model.GeoDataModel import GeoData
-from model.keys import google_elevation_api_key
-from algorithm.genetic_algorithm import GeneticAlgorithm
-from algorithm.Astar_algorithm import Astar
-from algorithm.Dijkstra_algorithm import Dijkstra
-from algorithm.Shortest_algorithm import Shortest
+from src.server.utils import *
+from src.server.model.GeoDataModel import GeoData
+from src.server.model.keys import google_elevation_api_key
+from src.server.algorithm.genetic_algorithm import GeneticAlgorithm
+from src.server.algorithm.Astar_algorithm import Astar
+from src.server.algorithm.Dijkstra_algorithm import Dijkstra
+from src.server.algorithm.Shortest_algorithm import Shortest
 
 
 def find_route(source, dest, method, percentage=1, is_max=1):

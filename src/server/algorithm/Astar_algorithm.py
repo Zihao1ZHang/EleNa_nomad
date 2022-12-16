@@ -1,9 +1,9 @@
 import heapq
 import networkx as nx
-from model.NodeWrapperModel import NodeWrapper
-from model.RouteModel import Route
-from utils import *
-from algorithm.RoutingAlgorithm import RoutingAlgorithm
+from src.server.model.NodeWrapperModel import NodeWrapper
+from src.server.model.RouteModel import Route
+from src.server.utils import *
+from src.server.algorithm.RoutingAlgorithm import RoutingAlgorithm
 import sys
 sys.path.insert(0, '../../server')
 
