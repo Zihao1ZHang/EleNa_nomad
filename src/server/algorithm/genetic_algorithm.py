@@ -1,21 +1,21 @@
+from tqdm import tqdm
+import random
+import networkx as nx
+from src.server.model.RouteModel import Route
+from src.server.utils import *
 import math
 import sys
 sys.path.insert(0, '../../server')
-from src.server.utils import *
-from src.server.model.RouteModel import Route
-import networkx as nx
-import random
-from tqdm import tqdm
 
 
 class GeneticAlgorithm(object):
     """Class to perform the genetic algorithm
 
     Attributes:
-    Geo: The instance of Geodatamodel, contains data for the search area,
-    distance_limit: The max distance that the aglorithm can go
-    is_max: Find the max elevation or minimum elevation
-    max_iteration: The number of populations generated
+    Geo (GeoData obj): The instance of Geodatamodel, contains data for the search area,
+    distance_limit(float): The max distance that the aglorithm can go
+    is_max(bool): Find the max elevation or minimum elevation
+    max_iteration(int): The number of populations generated
     """
 
     def __init__(self, geo, distance_limit, is_max, max_iteration=10):
@@ -55,7 +55,8 @@ class GeneticAlgorithm(object):
         else:
             elevation_gain = get_path_elevation(self.geodata, route)
             if elevation_gain != 0:
-                elevation_gain = math.exp(-10*get_path_elevation(self.geodata, route))
+                elevation_gain = math.exp(-10 *
+                                          get_path_elevation(self.geodata, route))
         distance = get_path_length(self.geodata, route)
         if distance > self.distance_limit:
             return elevation_gain / distance
@@ -72,7 +73,8 @@ class GeneticAlgorithm(object):
             route: The selected route
         """
         # Calculate the total fitness of the population
-        total_fitness = sum(self.calculate_fitness(route) for route in population)
+        total_fitness = sum(self.calculate_fitness(route)
+                            for route in population)
         # Generate a random number between 0 and the total fitness
         random_num = random.uniform(0, total_fitness)
         # Loop through the population and subtract each route's fitness from the random number
@@ -100,8 +102,10 @@ class GeneticAlgorithm(object):
             # routes, and the new route is returned.
             node1 = random.randint(1, len(route1)-1)
             node2 = random.randint(1, len(route2)-1)
-            route_between_nodes = self.dijkstra_find_route(self.geodata, route1[node1], route2[node2])
-            new_route = route1[:node1 - 1] + route_between_nodes + route2[node2 + 1:]
+            route_between_nodes = self.dijkstra_find_route(
+                self.geodata, route1[node1], route2[node2])
+            new_route = route1[:node1 - 1] + \
+                route_between_nodes + route2[node2 + 1:]
             return new_route
         # If intersection is found, randomly sample two nodes from the intersection, and finds their indices in the
         # two routes. The new route is then constructed by combining route1 and route2 together using these indexes
@@ -116,7 +120,8 @@ class GeneticAlgorithm(object):
             left_index1, right_index1 = right_index1, left_index1
         if left_index2 > right_index2:
             left_index2, right_index2 = right_index2, left_index2
-        new_route = route1[:left_index1] + route2[left_index2:right_index2] + route1[right_index1:]
+        new_route = route1[:left_index1] + \
+            route2[left_index2:right_index2] + route1[right_index1:]
         return new_route
 
     def mutate(self, route, mutation_probability):
@@ -179,8 +184,10 @@ class GeneticAlgorithm(object):
         # Randomly select a node in the graph and connect startpoint, this node and destination using shortest route
         rand_node_list = random.choices(list(self.geodata.nodes.keys()), k=num)
         for node in rand_node_list:
-            route1, _, _ = self.dijkstra_find_route(self.geodata, self.orig_node, node)
-            route2, _, _ = self.dijkstra_find_route(self.geodata, node, self.dest_node)
+            route1, _, _ = self.dijkstra_find_route(
+                self.geodata, self.orig_node, node)
+            route2, _, _ = self.dijkstra_find_route(
+                self.geodata, node, self.dest_node)
             population.append(route1 + route2[1:])
         return population
 
@@ -234,7 +241,7 @@ class GeneticAlgorithm(object):
             for n in nx.neighbors(geodata, current_node):
                 if n in unvisited_nodes:
                     temp = dist[current_node] + \
-                           get_length(geodata, current_node, n)
+                        get_length(geodata, current_node, n)
                     if temp < dist[n]:
                         dist[n] = temp
                         prev[n] = current_node
