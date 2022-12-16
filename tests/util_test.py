@@ -1,22 +1,12 @@
-import pytest
-import unittest
-import osmnx as ox
-import sys
-import networkx as nx
+from src.server.utils import *
 import matplotlib.pyplot as plt
+import networkx as nx
+import osmnx as ox
 
-sys.path.append('C:/Users/erich/Documents/2022_FALL/CS520_Software_Engineering/final/EleNa_nomad/src/server')
-sys.path.append('../src')
-from utils import *
-from model.GeoDataModel import GeoData
-from model.RouteModel import Route
-from model.keys import google_elevation_api_key
-import Route_Algorithm as RA
-
-from algorithm.genetic_algorithm import GeneticAlgorithm
-from algorithm.Astar_algorithm import Astar
-from algorithm.Dijkstra_algorithm import Dijkstra
-from algorithm.Shortest_algorithm import Shortest
+import unittest
+import pytest
+import os
+import sys
 
 class TestUtil(unittest.TestCase):
 
