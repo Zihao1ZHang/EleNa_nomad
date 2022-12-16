@@ -1,5 +1,6 @@
 from math import *
 import osmnx as ox
+import networkx as nx
 
 
 def get_length(G, start, end):
@@ -14,6 +15,9 @@ def get_length(G, start, end):
     Returns:
         float: the length of two adjacent nodes
     """
+    if nx.is_path(G, [start, end]) == False:
+        raise Exception("nodes are not adjacent")
+
     return G.edges[start, end, 0]['length']
 
 
@@ -29,6 +33,8 @@ def get_path_length(G, node_list):
     Returns:
         length (float) : the total length of the path
     """
+    if node_list == None or all(isinstance(item, int) for item in node_list) == False or nx.is_path(G, node_list) == False:
+        raise Exception("not a valid path")
     length = 0
     for i in range(len(node_list) - 1):
         length += get_length(G, node_list[i], node_list[i + 1])
@@ -47,6 +53,8 @@ def get_path_elevation(G, node_list):
     Returns:
         total_elevation (float) : the total elevation gain of the path 
     """
+    if node_list == None or all(isinstance(item, int) for item in node_list) == False or nx.is_path(G, node_list) == False:
+        raise Exception("not a valid path")
     total_elevation = 0
     for i in range(len(node_list) - 1):
         curr_elevation = get_elevation_gain(G, node_list[i], node_list[i + 1])
@@ -56,7 +64,7 @@ def get_path_elevation(G, node_list):
 
 
 def get_elevation_gain(G, start, end):
-    """ The method that calculate the elevation gain of node adjacent nodes
+    """ The method that calculate the elevation gain of node
 
     Args:
         G (GoeData object): a GoeData object that contains data about the search area, 
@@ -67,6 +75,8 @@ def get_elevation_gain(G, start, end):
     Returns:
         elevation (float) : the elevation gain of two nodes
     """
+    if nx.is_path(G, [start, end]) == False:
+        raise Exception("nodes are not adjacent")
     if start == end:
         return 0
     return G.nodes()[start]['elevation'] - G.nodes()[end]['elevation']
