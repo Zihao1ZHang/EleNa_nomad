@@ -8,24 +8,33 @@ node.js
 
 python=3.9
 
-## Run:
+## Install dependecies
 
 First, install both the front-end dependencies and the server dependencies using the following two commands:
 
-### `npm install`
-### `pip install -r requirements.txt`
+ `npm install`
+ 
+`pip install -r requirements.txt`
 
-In the project's root directory, run the React client using the following command:
+## Run:
 
-### `npm start`
+Our client runs on port 3000, and our server runs on port 8080. Make sure those two ports are avaiable before running. 
 
 In the project's root directory, run the Flask server using the following command:
 
-### `python src/server/server.py`
+`python src/server/server.py`
+
+In the project's root directory, run the React client using the following command:
+
+`npm start`
+
+The homepage will automatically shows up, it might takes longer when you first start the client. If the homepage does not show up, visit:
+
+`localhost:3000`
 
 ## Test
 
 In the project's root directory, run the following command:
 
-### `pytest`
+ `pytest`
 
