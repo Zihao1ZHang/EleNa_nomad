@@ -4,7 +4,8 @@
 The Elevation based navigation is a program that determines a route between two locations based on the desired optimization of elevation gain. It allows users to minimize or maximize elevation gain while also limiting the total distance to a specified percentage of the shortest path. This is particularly useful for hikers and bikers who want to plan their routes based on their desired level of intensity and elevation gain. The system considers the topography of the area and calculates a route that meets the specified optimization criteria.
 
 ## Environment requirement:
-### 'node.js'
+node.js
+
 python=3.9
 
 ## Run:
