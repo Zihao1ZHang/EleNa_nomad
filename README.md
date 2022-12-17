@@ -7,6 +7,8 @@ The Elevation based navigation is a program that determines a route between two 
 ### 'node.js'
 python=3.9
 
+## Run:
+
 First, install both the front-end dependencies and the server dependencies using the following two commands:
 
 ### `npm install`
